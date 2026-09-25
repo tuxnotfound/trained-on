@@ -47,6 +47,7 @@ asset_path: /rails/public/assets
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
   logs: app logs -f
+  bootstrap: app exec "bin/rails trained_on:bootstrap"
   refresh: app exec "bin/rails runner NightlyRefreshJob.perform_now"
   backup: app exec "bin/rails trained_on:backup"
 

@@ -24,7 +24,7 @@
             <% if tier.opt_out.present? %><span class="opt-out"><%= tier.opt_out %></span><% end %>
           </td>
           <td class="quote-cell">
-            <blockquote class="quote"><span class="q"><%= tier.quote %></span><cite><%= tier.document&.name %><% if tier.document&.capture_broken? %> · last good capture <%= date_tag(tier.document.last_located_version.last_seen_at) %><% end %></cite></blockquote>
+            <blockquote class="quote"><span class="q"><%= tier.quote %></span><cite><%= tier.document && (tier.document.source_urls.present? ? link_to(tier.document.name, tier.document.source_urls.first, rel: "noopener") : tier.document.name) %><% if tier.document&.capture_broken? %> · last good capture <%= date_tag(tier.document.last_located_version.last_seen_at) %><% end %></cite></blockquote>
           </td>
           <td data-label="On record since">
             <%= in_force_since(tier) %>

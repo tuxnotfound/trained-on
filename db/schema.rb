@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_25_092432) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_102830) do
   create_table "anchors", force: :cascade do |t|
     t.integer "document_id", null: false
     t.string "phrase"
@@ -63,12 +63,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_092432) do
     t.integer "vendor_id", null: false
     t.string "name"
     t.string "ota_path"
-    t.string "ota_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "versions_walked"
     t.integer "phantom_versions"
     t.datetime "walked_at"
+    t.json "source_urls"
     t.index ["ota_path"], name: "index_documents_on_ota_path", unique: true
     t.index ["vendor_id"], name: "index_documents_on_vendor_id"
   end

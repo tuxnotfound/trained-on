@@ -8,6 +8,18 @@
   <%= button_to (preview? ? "Leave preview" : "Preview the public site with drafts"), admin_preview_path, class: "btn btn--small", form: { style: "display:inline" } %>
 </p>
 
+<p class="filters">
+  <strong>Filter:</strong>
+  <%= link_to "All (#{@by_class.values.sum})", admin_events_path(state: @state), style: ("font-weight:600" unless @filter) %>
+  <% ClauseEvent::CLASSIFICATIONS.each do |c| %>
+    <% next unless @by_class[c].to_i.positive? %>
+    <%= link_to "#{ApplicationHelper::CLASSIFICATION_LABEL[c]} (#{@by_class[c]})", admin_events_path(state: @state, classification: c), style: ("font-weight:600" if @filter == c) %>
+  <% end %>
+</p>
+<% if @state == "pending" && (first = @events.first) %>
+  <p><%= link_to "Start reviewing#{" these" if @filter}: #{first.vendor.name}, #{first.occurred_on}", admin_event_path(first.id, filter: @filter), class: "btn btn--primary" %></p>
+<% end %>
+
 <div class="scroll-x">
 <table class="plain queue">
   <thead><tr><th>Recorded</th><th>Document</th><th>Suggested</th><th>Summary</th><th></th></tr></thead>
@@ -31,13 +43,14 @@
 <p class="small">Check each quote against the vendor's live page before marking it verified. A row not re-verified in 30 days shows as stale.</p>
 <div class="scroll-x">
 <table class="plain">
-  <thead><tr><th>Vendor and plan</th><th>Answer</th><th>Quote in clause?</th><th>Verified</th><th></th></tr></thead>
+  <thead><tr><th>Vendor and plan</th><th>Answer</th><th>Quote</th><th>Live page</th><th>Verified</th><th></th></tr></thead>
   <tbody>
     <% @tiers.each do |tier| %>
       <tr>
         <td><%= tier.vendor.name %>, <%= tier.name %></td>
         <td><%= answer_badge(tier) %></td>
-        <td><%= tier.quote_in_clause? ? "yes" : tag.strong("NO", class: "errors") %></td>
+        <td class="small"><%= tier.quote_in_clause? ? "" : tag.strong("NOT IN CLAUSE ", class: "errors") %>“<%= tier.quote %>”</td>
+        <td class="small"><%= safe_join(Array(tier.document&.source_urls).each_with_index.map { |u, i| link_to("page #{i + 1}", u, target: "_blank", rel: "noopener") }, " ") %></td>
         <td><%= tier.verified_on ? date_tag(tier.verified_on) : "draft" %></td>
         <td>
           <%= button_to "Verified today", admin_tier_path(tier), method: :patch, class: "btn btn--small" %>

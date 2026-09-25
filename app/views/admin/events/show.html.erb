@@ -1,11 +1,18 @@
 <% page_title "Review: #{@event.vendor.name} #{@event.occurred_on}" %>
-<p><%= link_to "Back to queue", admin_root_path %> · <%= link_to "Document anchors", admin_document_path(@event.document) %></p>
+<% filter = params[:filter].presence_in(ClauseEvent::CLASSIFICATIONS) %>
+<% queue = filter ? ClauseEvent.pending.where(classification: filter) : ClauseEvent.pending %>
+<% ids = queue.order(:occurred_on, :id).pluck(:id) %>
+<p>
+  <%= link_to "Back to queue", admin_root_path(classification: filter) %> · <%= link_to "Document anchors", admin_document_path(@event.document) %>
+  <% if (pos = ids.index(@event.id)) %> · <%= pos + 1 %> of <%= ids.size %> pending<%= " #{ApplicationHelper::CLASSIFICATION_LABEL[filter].downcase}" if filter %><% end %>
+</p>
 <h1><%= @event.vendor.name %>, <%= @event.document.name %></h1>
 <dl class="facts">
   <dt>Recorded</dt><dd><%= change_window(@event) %></dd>
   <dt>Kind</dt><dd><%= @event.kind %><% if @event.suspected_extraction %> · <strong class="lost">coincides with an OTA extraction change</strong><% end %></dd>
   <dt>State</dt><dd><%= @event.state %><%= " · reviewed #{l(@event.reviewed_at.to_date, format: :long)}" if @event.reviewed_at %></dd>
-  <dt>Evidence</dt><dd><%= link_to "new capture", @event.to_version.ota_commit_url %><% if @event.from_version %> · <%= link_to "old capture", @event.from_version.ota_commit_url %><% end %></dd>
+  <dt>Evidence</dt><dd><%= link_to "new capture", @event.to_version.ota_commit_url, target: "_blank", rel: "noopener" %><% if @event.from_version %> · <%= link_to "old capture", @event.from_version.ota_commit_url, target: "_blank", rel: "noopener" %><% end %></dd>
+  <dt>Live page</dt><dd><%= safe_join(Array(@event.document.source_urls).map { |u| link_to(u.sub(%r{\Ahttps?://}, ""), u, target: "_blank", rel: "noopener") }, " · ") %></dd>
   <% if @event.llm_verdict %>
     <dt>Haiku</dt><dd><%= @event.llm_verdict["classification"] %> / <%= @event.llm_verdict["direction"] %>: <%= @event.llm_verdict["one_line"] %></dd>
   <% end %>
@@ -20,6 +27,7 @@
 <% end %>
 
 <%= form_with model: @event, url: admin_event_path(@event.id), method: :patch, class: "review", data: { turbo: false } do |f| %>
+  <%= hidden_field_tag :filter, filter %>
   <% if @event.errors.any? %><p class="errors"><%= @event.errors.full_messages.to_sentence %></p><% end %>
   <div>
     <%= f.label :classification %>

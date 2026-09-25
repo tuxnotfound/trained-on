@@ -6,6 +6,12 @@ module Admin
 
     private
 
+    # In development the review decisions file is kept current after every
+    # decision, ready to commit. Production reviews are exported on demand.
+    def export_decisions
+      TrainedOn::Decisions.export! if Rails.env.development?
+    end
+
     def authenticate
       user, password = ENV["TRAINED_ON_ADMIN_USER"], ENV["TRAINED_ON_ADMIN_PASSWORD"]
       return head(:forbidden) if user.blank? || password.blank?

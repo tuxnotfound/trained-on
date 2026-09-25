@@ -1,6 +1,7 @@
 namespace :trained_on do
   desc "Rebuild clause history for every tracked document (or DOC=\"ChatGPT/Privacy Policy.md\")"
   task backfill: :environment do
+    TrainedOn::Corpus.versions_repo.ensure_clone!
     scope = ENV["DOC"] ? Document.where(ota_path: ENV["DOC"]) : Document.all
     scope.includes(:vendor).find_each do |document|
       run = TrainedOn::Backfill.new(document).call
@@ -40,5 +41,26 @@ namespace :trained_on do
     destination.close
     Dir.glob(dir.join("#{Rails.env}-*.sqlite3")).sort[0...-14].each { |old| File.delete(old) } # keep two weeks
     puts path
+  end
+end
+
+namespace :trained_on do
+  desc "Write human review decisions to db/seeds/decisions.yml"
+  task export_decisions: :environment do
+    data = TrainedOn::Decisions.export!
+    puts "Exported #{data['events'].size} event decisions and #{data['tiers'].size} verified rows."
+  end
+
+  desc "Replay db/seeds/decisions.yml onto the database (publishes what a human published)"
+  task apply_decisions: :environment do
+    result = TrainedOn::Decisions.apply!
+    puts "Applied #{result.applied} decisions."
+    result.stale.each { |s| warn "Clause changed since review, left pending: #{s}" }
+    result.missing.each { |s| warn "No match for: #{s}" }
+  end
+
+  desc "Fresh database to reviewed state: seed, rebuild history, load suggestions, replay decisions"
+  task bootstrap: :environment do
+    %w[db:seed trained_on:backfill trained_on:apply_reviews trained_on:apply_decisions].each { |t| Rake::Task[t].invoke }
   end
 end

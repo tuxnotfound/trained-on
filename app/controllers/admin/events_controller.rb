@@ -1,8 +1,13 @@
 module Admin
   class EventsController < BaseController
+    after_action :export_decisions, only: :update
+
     def index
       @state = params[:state].presence_in(ClauseEvent::STATES) || "pending"
+      @filter = params[:classification].presence_in(ClauseEvent::CLASSIFICATIONS)
       @events = ClauseEvent.where(state: @state).includes(document: :vendor).order(:occurred_on)
+      @events = @events.where(classification: @filter) if @filter
+      @by_class = ClauseEvent.where(state: @state).group(:classification).count
       @counts = ClauseEvent.group(:state).count
       @tiers = Tier.includes(:vendor, document: :clause_versions).order("vendors.position", :position).references(:vendor)
       @unanchored = Document.includes(:vendor, :clause_versions).select { |d| d.current_version&.unanchored_hits.present? }
@@ -38,9 +43,15 @@ module Admin
 
     def event_params = params.fetch(:clause_event, {}).permit(:classification, :direction, :one_line, :note)
 
+    # Walks the queue in date order, staying within the classification the
+    # reviewer filtered on, if any.
     def next_pending_path
-      following = ClauseEvent.pending.where("occurred_on > ? OR (occurred_on = ? AND id > ?)", @event.occurred_on, @event.occurred_on, @event.id).order(:occurred_on, :id).first
-      following ? admin_event_path(following.id) : admin_root_path
+      filter = params[:filter].presence_in(ClauseEvent::CLASSIFICATIONS)
+      scope = ClauseEvent.pending
+      scope = scope.where(classification: filter) if filter
+      following = scope.where("occurred_on > ? OR (occurred_on = ? AND id > ?)", @event.occurred_on, @event.occurred_on, @event.id).order(:occurred_on, :id).first
+      following ||= scope.order(:occurred_on, :id).first
+      following ? admin_event_path(following.id, filter:) : admin_root_path(classification: filter)
     end
   end
 end

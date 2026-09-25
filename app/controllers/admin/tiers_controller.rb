@@ -1,5 +1,7 @@
 module Admin
   class TiersController < BaseController
+    after_action :export_decisions, only: :update
+
     # Marks a registry row as checked against the live vendor page today.
     def update
       tier = Tier.find(params[:id])

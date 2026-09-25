@@ -39,18 +39,17 @@ and `/data`. Feeds and files: `/changes.atom`, `/vendors/:slug.atom`, `/api/v1/v
 
 ## Run it locally
 
-Ruby 3.4.9 and git. The corpus is a gitignored clone:
+Ruby 3.4.9 and git. The OTA corpus is a gitignored clone under `corpus/`, made on first run:
 
 ```
-git clone --filter=blob:none https://github.com/OpenTermsArchive/genai-contrib-versions corpus/genai-contrib-versions
 bundle install
-bin/rails db:setup                 # schema + vendors, documents, anchors, registry rows
-bin/rails trained_on:backfill      # about 45 s: rebuild every document's clause history
-bin/rails trained_on:apply_reviews # suggested verdicts from db/seeds/reviews.yml, still pending
+bin/rails db:prepare
+bin/rails trained_on:bootstrap   # clone corpus if missing, seed, rebuild history (about 45 s),
+                                 # load suggested verdicts, replay review decisions
 TRAINED_ON_ADMIN_USER=me TRAINED_ON_ADMIN_PASSWORD=secret bin/dev
 ```
 
-Nothing is public until reviewed, so the registry starts empty. Open `/admin`, press
+Nothing is public until reviewed. The registry shows only what `db/seeds/decisions.yml` publishes. Open `/admin`, press
 **Preview the public site with drafts** to see everything marked as draft, then work
 through the queue. In development, `?preview=1` also works.
 
@@ -61,6 +60,10 @@ through the queue. In development, `?preview=1` also works.
   a public classification (position, scope or disclosure) and a one-line summary.
 - **Registry rows**: check each quote against the vendor's live page, then press
   **Verified today**. Quotes must be verbatim in the tracked clause, which the model enforces.
+- **Decisions are files, not database rows.** Every publish, reject and verification made in
+  development is written to `db/seeds/decisions.yml` straight away. Commit it: git is the audit
+  trail, and a deploy replays it with `trained_on:apply_decisions`. A decision whose clause has
+  changed since the review is not applied, and the event goes back to pending.
 - **Anchors** (`/admin/documents/:id`): add or remove phrases, then rebuild. Copy the
   change into `db/seeds/anchors.yml` so a fresh database has it too. The same page lists
   training language the net found that no anchor covers.
@@ -95,7 +98,7 @@ export KAMAL_REGISTRY_USERNAME=... KAMAL_REGISTRY_PASSWORD=... TRAINED_ON_ADMIN_
 export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...  # optional: email digest
 export ANTHROPIC_API_KEY=...                                                          # optional: Haiku opinions
 bin/kamal setup
-bin/kamal refresh   # first backfill (clones the corpus)
+bin/kamal bootstrap   # clone the corpus, seed, rebuild history, replay review decisions
 ```
 
 Put Cloudflare in front for the launch spike. `bin/kamal backup` writes a SQLite copy to
