@@ -21,6 +21,9 @@ Rails.application.routes.draw do
 
   namespace :admin do
     root "events#index"
+    get "login", to: "sessions#new", as: :login
+    post "login", to: "sessions#create"
+    delete "logout", to: "sessions#destroy", as: :logout
     resources :events, only: %i[index show update]
     resources :tiers, only: :update
     resources :documents, only: :show do

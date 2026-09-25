@@ -183,7 +183,7 @@ table.plain td.num, table.plain th.num { text-align: right; font-variant-numeric
 .queue td, .queue th { font-size: 0.88rem; }
 .review { display: grid; gap: 0.75rem; max-width: var(--measure); margin-top: 1.5rem; }
 .review label { font-size: 0.82rem; color: var(--ink-2); display: block; margin-bottom: 0.2rem; }
-.review select, .review textarea, .review input[type=text] { width: 100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); color: var(--ink); }
+.review select, .review textarea, .review input[type=text], .review input[type=password] { width: 100%; font: inherit; padding: 0.5rem; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); color: var(--ink); }
 .review .buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .btn { font: 600 0.9rem var(--sans); border: 1px solid var(--ink); background: var(--paper); color: var(--ink); padding: 0.5rem 0.9rem; border-radius: 5px; cursor: pointer; }
 .btn--primary { background: var(--ink); color: var(--paper); }

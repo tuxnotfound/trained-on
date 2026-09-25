@@ -17,12 +17,46 @@ class AdminTest < ActionDispatch::IntegrationTest
 
   test "requires credentials, and refuses everything when none are configured" do
     get admin_root_path
-    assert_response :unauthorized
+    assert_redirected_to admin_login_path(return_to: "/admin")
     get admin_root_path, headers: { "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials("reviewer", "wrong") }
     assert_response :unauthorized
     ENV.delete("TRAINED_ON_ADMIN_PASSWORD")
     get admin_root_path, headers: @auth
     assert_response :forbidden
+    get admin_login_path
+    assert_response :forbidden
+  end
+
+  test "the login form lets a browser in, returns to the requested page, and logs out" do
+    get admin_event_path(@event.id)
+    assert_redirected_to admin_login_path(return_to: "/admin/events/#{@event.id}")
+
+    post admin_login_path, params: { username: "reviewer", password: "wrong", return_to: "/admin/events/#{@event.id}" }
+    assert_response :unprocessable_content
+    assert_match "Wrong username or password", response.body
+
+    post admin_login_path, params: { username: "reviewer", password: "correct horse", return_to: "/admin/events/#{@event.id}" }
+    assert_redirected_to "/admin/events/#{@event.id}"
+    get admin_root_path
+    assert_response :success
+
+    delete admin_logout_path
+    get admin_root_path
+    assert_redirected_to admin_login_path(return_to: "/admin")
+  end
+
+  test "login never redirects to another host" do
+    post admin_login_path, params: { username: "reviewer", password: "correct horse", return_to: "//evil.example/admin" }
+    assert_redirected_to admin_root_path
+  end
+
+  test "changing the password ends existing sessions" do
+    post admin_login_path, params: { username: "reviewer", password: "correct horse" }
+    get admin_root_path
+    assert_response :success
+    ENV["TRAINED_ON_ADMIN_PASSWORD"] = "a new password"
+    get admin_root_path
+    assert_redirected_to admin_login_path(return_to: "/admin")
   end
 
   test "publishing from the review screen makes the event public" do

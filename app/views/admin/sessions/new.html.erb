@@ -1,0 +1,15 @@
+<% page_title "Log in" %>
+<h1>Review admin</h1>
+<p class="lede">Log in with the username and password from <code>TRAINED_ON_ADMIN_USER</code> and <code>TRAINED_ON_ADMIN_PASSWORD</code>. Locally they are in <code>.env</code>.</p>
+<%= form_with url: admin_login_path, class: "review", data: { turbo: false } do %>
+  <%= hidden_field_tag :return_to, params[:return_to] %>
+  <div>
+    <%= label_tag :username, "Username" %>
+    <%= text_field_tag :username, params[:username], autocomplete: "username", autofocus: true, required: true, autocapitalize: "none", spellcheck: false %>
+  </div>
+  <div>
+    <%= label_tag :password, "Password" %>
+    <%= password_field_tag :password, nil, autocomplete: "current-password", required: true %>
+  </div>
+  <div class="buttons"><%= submit_tag "Log in", class: "btn btn--primary" %></div>
+<% end %>

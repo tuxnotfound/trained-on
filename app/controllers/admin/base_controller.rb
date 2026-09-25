@@ -1,8 +1,13 @@
 module Admin
-  # The integrity gate. One reviewer, HTTP basic auth, credentials from the
-  # environment. Without them set, the admin refuses every request.
+  # The integrity gate. One reviewer, credentials from the environment.
+  # Browsers log in through a form (/admin/login), because HTTP Basic prompts
+  # do not appear in every browser. Scripts and tests may still send HTTP Basic.
+  # Without credentials configured, the admin refuses every request.
   class BaseController < ApplicationController
+    include AdminCredentials
+
     before_action :authenticate
+    helper_method :admin_logged_in?
 
     private
 
@@ -13,10 +18,13 @@ module Admin
     end
 
     def authenticate
-      user, password = ENV["TRAINED_ON_ADMIN_USER"], ENV["TRAINED_ON_ADMIN_PASSWORD"]
-      return head(:forbidden) if user.blank? || password.blank?
-      authenticate_or_request_with_http_basic("Trained On review") do |u, p|
-        ActiveSupport::SecurityUtils.secure_compare(u, user) & ActiveSupport::SecurityUtils.secure_compare(p, password)
+      return render(plain: AdminCredentials::DISABLED, status: :forbidden) unless admin_configured?
+      return if admin_logged_in?
+
+      if request.authorization.present?
+        authenticate_or_request_with_http_basic("Trained On review") { |user, password| valid_admin?(user, password) }
+      else
+        redirect_to admin_login_path(return_to: (request.fullpath if request.get?))
       end
     end
   end

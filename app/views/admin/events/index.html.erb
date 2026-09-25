@@ -6,6 +6,7 @@
     <%= link_to "#{state.capitalize} (#{@counts[state].to_i})", admin_events_path(state:), style: ("font-weight:600" if state == @state) %> ·
   <% end %>
   <%= button_to (preview? ? "Leave preview" : "Preview the public site with drafts"), admin_preview_path, class: "btn btn--small", form: { style: "display:inline" } %>
+  <% if admin_logged_in? %><%= button_to "Log out", admin_logout_path, method: :delete, class: "btn btn--small", form: { style: "display:inline" } %><% end %>
 </p>
 
 <p class="filters">
