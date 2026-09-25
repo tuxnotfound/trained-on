@@ -73,12 +73,16 @@ class TrainedOn::BackfillTest < ActiveSupport::TestCase
     document = build_document(anchors: [ "train our models on your content" ])
     versions = [ [ "2025-01-01", OLD ], [ "2025-02-01", NEW ] ]
     backfill(document, versions)
-    document.clause_events.first.update!(classification: "position", direction: "now_trains", one_line: "Acme now trains.", state: "published", reviewed_at: Time.current)
+    document.clause_events.first.update!(classification: "position", direction: "now_trains", one_line: "Acme now trains.", note: "checked the archive",
+                                         state: "published", decided_by: "panel", reviewed_at: Time.current, panel: { "decision" => "published", "readers" => [] })
 
     run = backfill(document, versions)
     event = document.clause_events.first
     assert_equal "published", event.state
     assert_equal "Acme now trains.", event.one_line
+    assert_equal "panel", event.decided_by
+    assert_equal "published", event.panel["decision"]
+    assert_equal "checked the archive", event.note
     assert_empty run.created_events, "a carried-over event is not new"
   end
 

@@ -14,7 +14,8 @@ module TrainedOn
       def lost? = result.anchor_lost
     end
 
-    REVIEW_ATTRS = %w[state classification direction one_line llm_verdict reviewed_at].freeze
+    # Everything a review produced, carried across a rebuild.
+    REVIEW_ATTRS = %w[state classification direction one_line note panel decided_by reviewed_at].freeze
 
     attr_reader :document, :created_events
 
