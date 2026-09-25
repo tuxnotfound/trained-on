@@ -5,7 +5,7 @@ module TrainedOn
       PROVIDER = "Gemini (Google)".freeze
       KEY_ENV = "GEMINI_API_KEY".freeze
       MODEL_ENV = "TRAINED_ON_GEMINI_MODEL".freeze
-      DEFAULT_MODEL = "gemini-2.5-pro".freeze
+      DEFAULT_MODEL = "gemini-3.1-pro-preview".freeze
       BASE = "https://generativelanguage.googleapis.com/v1beta".freeze
 
       def initialize(transport: Http.method(:json))

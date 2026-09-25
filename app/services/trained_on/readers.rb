@@ -31,23 +31,48 @@ module TrainedOn
     module Http
       NETWORK_ERRORS = [ ::SocketError, ::Errno::ECONNREFUSED, ::Errno::ECONNRESET, ::Errno::EHOSTUNREACH, ::Net::OpenTimeout, ::Net::ReadTimeout, ::OpenSSL::SSL::SSLError, ::IOError ].freeze
 
+      # Overloaded or rate-limited answers are retried a little; anything else is final.
+      RETRY_CODES = %w[429 503 529].freeze
+      RETRY_DELAYS = [ 20, 45 ].freeze
+
       module_function
 
-      def json(method, url, headers: {}, body: nil, timeout: 180)
+      def json(method, url, headers: {}, body: nil, timeout: 180, delays: RETRY_DELAYS)
         uri = URI(url)
+        attempt = 0
+        loop do
+          response = send_request(uri, method, headers, body, timeout)
+          return JSON.parse(response.body) if response.is_a?(::Net::HTTPSuccess)
+          if RETRY_CODES.include?(response.code) && attempt < delays.size
+            sleep(delays[attempt])
+            attempt += 1
+            next
+          end
+          raise Error, "#{uri.host} answered #{response.code}: #{error_text(response.body)}"
+        end
+      rescue *NETWORK_ERRORS => e
+        raise Error, "#{uri.host}: #{e.class}: #{e.message}"
+      rescue JSON::ParserError => e
+        raise Error, "#{uri.host}: unreadable response: #{e.message}"
+      end
+
+      def send_request(uri, method, headers, body, timeout)
         http = ::Net::HTTP.new(uri.host, uri.port)
         http.use_ssl = true
         http.open_timeout = 15
         http.read_timeout = timeout
         request = (method == :get ? ::Net::HTTP::Get : ::Net::HTTP::Post).new(uri, { "Content-Type" => "application/json" }.merge(headers))
         request.body = JSON.generate(body) if body
-        response = http.request(request)
-        raise Error, "#{uri.host} answered #{response.code}: #{response.body.to_s[0, 300]}" unless response.is_a?(::Net::HTTPSuccess)
-        JSON.parse(response.body)
-      rescue *NETWORK_ERRORS => e
-        raise Error, "#{uri.host}: #{e.class}: #{e.message}"
-      rescue JSON::ParserError => e
-        raise Error, "#{uri.host}: unreadable response: #{e.message}"
+        http.request(request)
+      end
+
+      # The provider's own message, without its help links, so the reason
+      # (a quota, a retired model) survives into the review queue and the digest.
+      def error_text(body)
+        message = JSON.parse(body.to_s).dig("error", "message")
+        (message.presence || body.to_s).gsub(%r{https?://\S+}, "").gsub(/\s+/, " ").strip[0, 600]
+      rescue JSON::ParserError
+        body.to_s.gsub(/\s+/, " ")[0, 600]
       end
     end
   end

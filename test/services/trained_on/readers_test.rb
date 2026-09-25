@@ -56,7 +56,7 @@ class TrainedOn::ReadersTest < ActiveSupport::TestCase
     assert_equal({ "answer" => "no" }, reader.ask(system: "SYS", user: "USER", schema: SCHEMA))
 
     call = transport.calls.first
-    assert_equal "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent", call[:url]
+    assert_equal "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent", call[:url]
     assert_equal "g-test", call[:headers]["x-goog-api-key"]
     assert_equal "SYS", call[:body].dig(:systemInstruction, :parts, 0, :text)
     assert_equal "USER", call[:body].dig(:contents, 0, :parts, 0, :text)
@@ -70,6 +70,12 @@ class TrainedOn::ReadersTest < ActiveSupport::TestCase
   test "Gemini: a blocked prompt is an error" do
     blocked = FakeTransport.new({ "promptFeedback" => { "blockReason" => "SAFETY" }, "candidates" => [] })
     assert_raises(TrainedOn::Readers::Error) { TrainedOn::Readers::GeminiReader.new(transport: blocked).ask(system: "s", user: "u", schema: SCHEMA) }
+  end
+
+  test "the provider's own error message is kept, without its links" do
+    body = { "error" => { "code" => 429, "message" => "You exceeded your current quota. See https://x.example/limits\n* Quota exceeded for metric: free_tier_requests, limit: 0" } }.to_json
+    assert_equal "You exceeded your current quota. See * Quota exceeded for metric: free_tier_requests, limit: 0", TrainedOn::Readers::Http.error_text(body)
+    assert_equal "plain text", TrainedOn::Readers::Http.error_text("plain\n text")
   end
 
   test "a transport failure surfaces as a reader error" do
