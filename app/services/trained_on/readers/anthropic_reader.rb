@@ -13,7 +13,7 @@ module TrainedOn
       end
 
       def available_models
-        client.models.list.map(&:id)
+        client.models.list.to_enum.map(&:id)
       rescue Anthropic::Errors::APIError => e
         raise Error, "#{PROVIDER}: #{e.message}"
       end
