@@ -9,6 +9,8 @@ class ClauseEvent < ApplicationRecord
   belongs_to :document
   belongs_to :from_version, class_name: "ClauseVersion", optional: true
   belongs_to :to_version, class_name: "ClauseVersion"
+  belongs_to :reverses_event, class_name: "ClauseEvent", optional: true
+  has_one :reversed_by, class_name: "ClauseEvent", foreign_key: :reverses_event_id, dependent: :nullify, inverse_of: :reverses_event
   has_one :vendor, through: :document
 
   validates :state, inclusion: { in: STATES }

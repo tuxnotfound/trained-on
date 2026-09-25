@@ -82,6 +82,19 @@ class TrainedOn::BackfillTest < ActiveSupport::TestCase
     assert_empty run.created_events, "a carried-over event is not new"
   end
 
+  test "a change that restores earlier wording is marked as reversing that change" do
+    document = build_document(anchors: [ "train our models on your content" ])
+    backfill(document, [
+      [ "2025-01-01", OLD ],
+      [ "2025-02-01", NEW ],
+      [ "2025-03-01", OLD + "\n\nA new unrelated paragraph." ]
+    ])
+    first, second = document.clause_events.order(:occurred_on).to_a
+    assert_nil first.reverses_event
+    assert_equal first, second.reverses_event
+    assert_equal second, first.reload.reversed_by
+  end
+
   test "documents without anchors are skipped" do
     document = build_document(anchors: [])
     backfill(document, [ [ "2025-01-01", OLD ] ])

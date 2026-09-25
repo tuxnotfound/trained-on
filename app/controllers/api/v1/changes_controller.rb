@@ -3,7 +3,7 @@ require "csv"
 module Api
   module V1
     class ChangesController < ApplicationController
-      COLUMNS = %w[date vendor document classification direction summary decided_by previous_capture url ota_commit].freeze
+      COLUMNS = %w[date vendor document classification direction summary decided_by reverses previous_capture url ota_commit].freeze
 
       def index
         events = ClauseEvent.published.includes(:from_version, :to_version, document: :vendor).order(occurred_on: :desc)
@@ -19,7 +19,7 @@ module Api
         {
           "date" => event.occurred_on.iso8601, "vendor" => event.vendor.name, "document" => event.document.name,
           "classification" => event.classification, "direction" => event.direction, "summary" => event.one_line,
-          "decided_by" => event.decided_by,
+          "decided_by" => event.decided_by, "reverses" => event.reverses_event&.occurred_on&.iso8601,
           "previous_capture" => event.from_version&.last_seen_at&.to_date&.iso8601,
           "url" => change_url(event), "ota_commit" => event.to_version.ota_commit_url
         }

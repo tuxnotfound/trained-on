@@ -18,6 +18,12 @@
       <% if @event.from_version %> · <%= link_to "last capture with the old text", @event.from_version.ota_commit_url %><% end %>
     </dd>
     <dt>Vendor</dt><dd><%= link_to "All #{@vendor.name} plans and changes", vendor_path(@vendor) %></dd>
+    <% if @event.reverses_event && visible_event?(@event.reverses_event) %>
+      <dt>Reverses</dt><dd><%= link_to "the change of #{l(@event.reverses_event.occurred_on, format: :long)}", change_path(@event.reverses_event) %></dd>
+    <% end %>
+    <% if @event.reversed_by && visible_event?(@event.reversed_by) %>
+      <dt>Reversed</dt><dd><%= link_to "on #{l(@event.reversed_by.occurred_on, format: :long)}", change_path(@event.reversed_by) %></dd>
+    <% end %>
     <dt>Decided by</dt>
     <dd><% if @event.decided_by_panel? %>Three independent AI readers agreed: <%= @event.panel_providers.join(", ") %>. <%= link_to "How that works", methodology_path(anchor: "review") %>.<% else %>A person, after reading both versions.<% end %></dd>
   </dl>

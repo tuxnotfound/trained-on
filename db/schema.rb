@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_25_111140) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_135154) do
   create_table "anchors", force: :cascade do |t|
     t.integer "document_id", null: false
     t.string "phrase"
@@ -37,9 +37,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_111140) do
     t.datetime "updated_at", null: false
     t.text "note"
     t.string "decided_by"
+    t.integer "reverses_event_id"
     t.index ["document_id", "to_version_id", "kind"], name: "index_clause_events_on_document_id_and_to_version_id_and_kind", unique: true
     t.index ["document_id"], name: "index_clause_events_on_document_id"
     t.index ["from_version_id"], name: "index_clause_events_on_from_version_id"
+    t.index ["reverses_event_id"], name: "index_clause_events_on_reverses_event_id"
     t.index ["state", "occurred_on"], name: "index_clause_events_on_state_and_occurred_on"
     t.index ["to_version_id"], name: "index_clause_events_on_to_version_id"
   end
@@ -100,10 +102,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_111140) do
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "company"
     t.index ["slug"], name: "index_vendors_on_slug", unique: true
   end
 
   add_foreign_key "anchors", "documents"
+  add_foreign_key "clause_events", "clause_events", column: "reverses_event_id"
   add_foreign_key "clause_events", "clause_versions", column: "from_version_id"
   add_foreign_key "clause_events", "clause_versions", column: "to_version_id"
   add_foreign_key "clause_events", "documents"

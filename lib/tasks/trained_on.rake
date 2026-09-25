@@ -23,6 +23,17 @@ namespace :trained_on do
     ClauseEvent.pending.includes(document: :vendor).chronological.each { |e| puts "  #{e.occurred_on} #{e.document.ota_path}: #{e.panel_reason || 'panel has not run'}" }
   end
 
+  desc "Undo every panel decision so the panel can run again with a changed prompt (a person's decisions stay)"
+  task panel_reset: :environment do
+    events = ClauseEvent.where(decided_by: "panel").update_all(state: "pending", decided_by: nil, reviewed_at: nil, panel: nil)
+    ClauseEvent.where(decided_by: nil).update_all(panel: nil)
+    tiers = Tier.where(confirmed_by: "panel").update_all(confirmed_by: nil, confirmed_at: nil, panel: nil)
+    Tier.where(confirmed_by: nil).update_all(panel: nil)
+    Rake::Task["trained_on:apply_reviews"].invoke
+    TrainedOn::Decisions.export! if Rails.env.development?
+    puts "Reset #{events} panel-decided events and #{tiers} panel-confirmed rows."
+  end
+
   desc "Check each configured reader's key and model id against the provider"
   task panel_check: :environment do
     TrainedOn::Readers.all.each do |reader|

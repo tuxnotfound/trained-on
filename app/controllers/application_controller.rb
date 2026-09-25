@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
-  helper_method :preview?
+  helper_method :preview?, :visible_event?
 
   private
 
@@ -11,6 +11,7 @@ class ApplicationController < ActionController::Base
   def preview? = cookies.signed[:preview] == "1" || (Rails.env.development? && params[:preview] == "1")
 
   def visible_events = preview? ? ClauseEvent.publishable_draft.or(ClauseEvent.published) : ClauseEvent.published
+  def visible_event?(event) = visible_events.exists?(event.id)
   def visible_tiers = preview? ? Tier.all : Tier.verified
 
   def visible_vendors

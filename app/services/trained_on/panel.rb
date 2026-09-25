@@ -25,7 +25,7 @@ module TrainedOn
       - unrelated: the change is not about training on user data.
       direction: now_trains, no_longer_trains, scope_widened, scope_narrowed, disclosure or wording_only.
       material: true only for position and scope.
-      one_line: one plain sentence for someone deciding whether their company may use this tool. Name the vendor, quote the decisive words, keep every qualifier such as "by default", "in certain markets" or "unless you opt out", and state no motive.
+      one_line: one plain sentence of at most 30 words for someone deciding whether their company may use this tool. Name the company, quote the decisive words, keep every qualifier such as "by default", "in certain markets" or "unless you opt out", and state no motive.
       confidence: high, medium or low.
       concerns: anything ambiguous or that could be read two ways; otherwise an empty string.
       Answer from the text alone. Do not use outside knowledge of the vendor.
@@ -47,8 +47,8 @@ module TrainedOn
 
     SKEPTIC_SYSTEM = <<~PROMPT.freeze
       You check one-line summaries of a change to the clause in an AI vendor's terms about training on users' data. You see the old and new text and several candidate summaries.
-      Choose the one summary that states only what the texts show, keeps every qualifier (such as "by default", "in certain markets", "unless you opt out"), names the vendor, quotes the decisive words, and attributes no motive. Between two accurate summaries prefer the more cautious one.
-      If none is acceptable, answer -1 and say what is wrong with them.
+      Choose the one summary that states only what the texts show, keeps every qualifier (such as "by default", "in certain markets", "unless you opt out"), names the company, quotes the decisive words, and attributes no motive. Between two accurate summaries prefer the shorter and more cautious one.
+      If none is acceptable, or every one is longer than 35 words, answer -1 and say what is wrong with them.
       Answer with the 0-based index of your choice.
     PROMPT
 
@@ -137,9 +137,10 @@ module TrainedOn
 
     def event_prompt(event)
       <<~TEXT
-        Vendor: #{event.vendor.name}
+        Vendor: #{event.vendor.name_with_company}
         Document: #{event.document.name}
         First recorded: #{event.occurred_on.iso8601}
+        #{reversal_note(event)}
 
         OLD TEXT:
         #{event.from_version&.text.presence || "(no training clause was found in earlier captures)"}
@@ -149,9 +150,17 @@ module TrainedOn
       TEXT
     end
 
+    # Context from the record itself, not from any reader: a change that undoes
+    # an earlier one should be read as the mirror of that change.
+    def reversal_note(event)
+      return "" unless event.reverses_event
+      earlier = event.reverses_event
+      "Note from the record: this change reverses a change first recorded on #{earlier.occurred_on.iso8601}. Wording introduced then is removed again, and wording removed then is back."
+    end
+
     def tier_prompt(tier, version)
       <<~TEXT
-        Vendor: #{tier.vendor.name}
+        Vendor: #{tier.vendor.name_with_company}
         Plan: #{tier.name}
         Document: #{tier.document.name}
 

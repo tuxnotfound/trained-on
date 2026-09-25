@@ -59,13 +59,18 @@ class TrainedOn::PanelTest < ActiveSupport::TestCase
     assert @event.reviewed_at
   end
 
-  test "readers see the texts and nothing else" do
+  test "readers see the texts, the company, and the record's reversal note, and nothing else" do
+    @document.vendor.update!(company: "Acme Labs")
+    earlier = @document.clause_events.create!(from_version: @new, to_version: @old, occurred_on: Date.new(2024, 6, 1))
+    @event.update!(reverses_event: earlier)
     rs = readers("position", "position", "position")
     TrainedOn::Panel.new(readers: rs, skeptic: skeptic(0)).review_event(@event)
     rs.each do |reader|
       prompt = reader.asked.first[:user]
       assert_includes prompt, OLD
       assert_includes prompt, NEW
+      assert_includes prompt, "Acme (Acme Labs)"
+      assert_includes prompt, "reverses a change first recorded on 2024-06-01"
       assert_not_includes prompt, "SUGGESTED SUMMARY"
       assert_not_includes prompt.downcase, "scope"
       assert_not_includes reader.asked.first[:system], "Acme"

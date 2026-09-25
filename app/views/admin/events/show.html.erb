@@ -13,6 +13,7 @@
   <dt>State</dt><dd><%= @event.state %><%= " · reviewed #{l(@event.reviewed_at.to_date, format: :long)}" if @event.reviewed_at %></dd>
   <dt>Evidence</dt><dd><%= link_to "new capture", @event.to_version.ota_commit_url, target: "_blank", rel: "noopener" %><% if @event.from_version %> · <%= link_to "old capture", @event.from_version.ota_commit_url, target: "_blank", rel: "noopener" %><% end %></dd>
   <dt>Live page</dt><dd><%= safe_join(Array(@event.document.source_urls).map { |u| link_to(u.sub(%r{\Ahttps?://}, ""), u, target: "_blank", rel: "noopener") }, " · ") %></dd>
+  <% if @event.reverses_event %><dt>Reverses</dt><dd><%= link_to "the change of #{@event.reverses_event.occurred_on}", admin_event_path(@event.reverses_event.id) %></dd><% end %>
   <% if @event.decided_by %><dt>Decided by</dt><dd><%= @event.decided_by %></dd><% end %>
 </dl>
 

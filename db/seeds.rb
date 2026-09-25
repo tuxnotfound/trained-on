@@ -6,7 +6,7 @@ require "yaml"
 
 YAML.load_file(Rails.root.join("db/seeds/anchors.yml")).each_with_index do |row, i|
   vendor = Vendor.find_or_initialize_by(slug: row.fetch("slug"))
-  vendor.update!(name: row.fetch("vendor"), ota_service: row.fetch("ota_service"), summary: row["summary"], position: i)
+  vendor.update!(name: row.fetch("vendor"), ota_service: row.fetch("ota_service"), summary: row["summary"], company: row["company"], position: i)
   row.fetch("documents").each do |doc|
     document = vendor.documents.find_or_initialize_by(ota_path: doc.fetch("ota_path"))
     document.update!(name: doc.fetch("name"), source_urls: doc.fetch("urls", []))

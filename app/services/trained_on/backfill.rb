@@ -105,7 +105,8 @@ module TrainedOn
       occurred_on = run.first.committed_at.to_date
       attrs = {
         kind:, from_version: from, to_version: to, occurred_on:,
-        suspected_extraction: ExtractionCheck.suspected?(@versions, run.first)
+        suspected_extraction: ExtractionCheck.suspected?(@versions, run.first),
+        reverses_event: (kind == "change" && from ? reversed_change(from, to) : nil)
       }
       key = [ occurred_on, to.sha256, kind ]
       event = document.clause_events.create!(attrs.merge(carried.fetch(key, {})))
@@ -114,6 +115,21 @@ module TrainedOn
 
     # Every existing event is carried over, reviewed or not: an event already
     # in the queue is not "new" again, so the nightly email does not repeat it.
+    # The most recent earlier change that this one undoes: wording it added is
+    # gone again, and wording it removed is back. Paragraph-level, so a partial
+    # reversal counts when whole sentences come back.
+    def reversed_change(from, to)
+      gone = from.paragraphs - to.paragraphs
+      came = to.paragraphs - from.paragraphs
+      return if gone.empty? || came.empty?
+      document.clause_events.where(kind: "change").where.not(from_version_id: nil)
+              .includes(:from_version, :to_version).order(occurred_on: :desc, id: :desc).find do |earlier|
+        earlier_gone = earlier.from_version.paragraphs - earlier.to_version.paragraphs
+        earlier_came = earlier.to_version.paragraphs - earlier.from_version.paragraphs
+        (earlier_came & gone).any? && (earlier_gone & came).any?
+      end
+    end
+
     def carry_over_reviews
       document.clause_events.includes(:to_version).each_with_object({}) do |event, memo|
         memo[[ event.occurred_on, event.to_version.sha256, event.kind ]] = event.attributes.slice(*REVIEW_ATTRS)
