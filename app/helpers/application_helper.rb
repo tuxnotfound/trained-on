@@ -1,6 +1,7 @@
 module ApplicationHelper
   ANSWER_TONE = {
-    "trains_opt_out" => "trains", "trains_no_opt_out" => "trains", "trains_regional_opt_out" => "trains",
+    "trains_opt_out" => "trains", "trains_no_opt_out" => "trains", "trains_regional_opt_out" => "trains", "trains_in_some_markets" => "trains",
+    "your_choice_default_unstated" => "unclear",
     "no_training_default" => "safe", "no_training" => "safe", "unclear" => "unclear"
   }.freeze
 

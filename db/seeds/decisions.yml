@@ -1,0 +1,379 @@
+# Review decisions (by the panel or a person), written by the review admin (development) or by
+# `bin/rails trained_on:export_decisions`. Replayed with
+# `bin/rails trained_on:apply_decisions`. Do not edit by hand: review in /admin.
+events:
+- doc: ChatGPT/Business Privacy Policy.md
+  date: '2025-08-30'
+  kind: change
+  clause: 90a0db637e32
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: '"ChatGPT Team" renamed "ChatGPT Business" in the no-training list.'
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:50:48Z'
+- doc: ChatGPT/Business Privacy Policy.md
+  date: '2025-11-20'
+  kind: change
+  clause: a54dcd30d18e
+  state: published
+  classification: position
+  direction: scope_widened
+  one_line: ChatGPT added "ChatGPT for Teachers" to the list of services whose business
+    data isn't used for training "by default", noted it uses data from individual
+    versions of ChatGPT and "other services" (formerly DALL·E), and changed its absolute
+    statement against training on connector data to say it does not train on it "By
+    default".
+  note: '"We do not train on any business data accessed from connectors" became "By
+    default, we do not...", which admits an opt-in.'
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:51:16Z'
+- doc: ChatGPT/Business Privacy Policy.md
+  date: '2026-01-09'
+  kind: change
+  clause: 53368a54fa95
+  state: published
+  classification: scope
+  direction: scope_narrowed
+  one_line: ChatGPT (OpenAI) still says "by default, we do not use your business data
+    for training our models," and now adds ChatGPT for Healthcare to the list of products
+    whose data "isn't used for training our models" "unless you have explicitly opted
+    in," while the connector clause is renamed to apps and broadened from "any business
+    data accessed from connectors" to "any data accessed from apps."
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:51:44Z'
+- doc: ChatGPT/Privacy Policy.md
+  date: '2024-06-10'
+  kind: change
+  clause: 895ed421ee61
+  state: published
+  classification: scope
+  direction: scope_widened
+  one_line: ChatGPT's operator now states it "use[s] Content you provide us... to
+    train the models that power our Services" rather than "may use" it to train "the
+    models that power ChatGPT," so training is affirmed and covers models behind all
+    its Services, still with instructions on "how you can opt out."
+  note: '"we may use Content" briefly became "we use Content" (reverted 2024-11-05).
+    Same practice.'
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:49:15Z'
+- doc: ChatGPT/Terms of Service.md
+  date: '2024-06-10'
+  kind: change
+  clause: 60c225a28c94
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: ChatGPT's opt-out moved from a help-centre form to account settings.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:50:27Z'
+- doc: ChatGPT/Terms of Service.md
+  date: '2025-05-17'
+  kind: change
+  clause: 49396bed2a5a
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: '"Help Center article" became "article".'
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:50:32Z'
+- doc: Claude.ai/Privacy Policy.md
+  date: '2025-08-29'
+  kind: change
+  clause: d299f28fa6de
+  state: published
+  classification: position
+  direction: now_trains
+  one_line: Claude.ai changed from “We will not use your Inputs or Outputs to train
+    our models” unless safety review, reporting, or explicit opt-in, to “We may use
+    your Inputs and Outputs to train our models and improve our Services, unless you
+    opt out through your account settings,” with safety-review and reported-material
+    exceptions even if you opt out.
+  note: Clearest change in the corpus. Same day as the Terms of Service change.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:52:05Z'
+- doc: Claude.ai/Privacy Policy.md
+  date: '2025-11-01'
+  kind: change
+  clause: 93f2e1a41168
+  state: published
+  classification: disclosure
+  direction: disclosure
+  one_line: Claude.ai adds a legal-basis disclosure that “It is in our legitimate
+    interests to train and improve our AI models,” while the operative rule still
+    says “We may use your Inputs and Outputs to train our models and improve our Services,
+    unless you opt out through your account settings,” with flagged-safety-review
+    and explicit-reporting exceptions.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:52:42Z'
+- doc: Claude.ai/Privacy Policy.md
+  date: '2026-07-08'
+  kind: change
+  clause: b13635d29643
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: '"Third party sources" became "sources" in the list of training data sources.'
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:53:05Z'
+- doc: Claude.ai/Terms of Service.md
+  date: '2025-08-29'
+  kind: change
+  clause: d60ff348843e
+  state: published
+  classification: position
+  direction: now_trains
+  one_line: Claude.ai changed from "We will not train our models on any Materials
+    that are not publicly available" (except feedback and safety-flagged content)
+    to training its models on user Materials by default "unless you opt out of training
+    through your account settings," with feedback and safety-flagged Materials still
+    used for training even if you opt out.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:53:18Z'
+- doc: Claude.ai/Terms of Service.md
+  date: '2025-11-28'
+  kind: change
+  clause: '727249309797'
+  state: published
+  classification: scope
+  direction: scope_widened
+  one_line: Claude.ai now says it may use your Materials "to provide, maintain, and
+    improve the Services and to develop other products and services, including training
+    our models, unless you opt out of training through your account settings," adding
+    development of other products and services to the prior purposes, while opt-out
+    still does not cover Feedback or Materials flagged for safety review.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:53:35Z'
+- doc: Codeium/Terms of Service.md
+  date: '2025-04-08'
+  kind: change
+  clause: 9805b2e00902
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: Opt-out email address changed from codeium.com to windsurf.com.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:57:22Z'
+- doc: Codeium/Terms of Service.md
+  date: '2026-04-15'
+  kind: change
+  clause: 6d7377477f67
+  state: rejected
+  classification: unrelated
+  direction: wording_only
+  one_line: Devin added to the list of products that store code snippets.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:58:13Z'
+- doc: Codeium/Terms of Service.md
+  date: '2026-07-01'
+  kind: change
+  clause: 2e4d3f9504af
+  state: published
+  classification: position
+  direction: now_trains
+  one_line: Windsurf (Codeium) now says “Cognition may use Customer Data for model
+    training purposes” and only “If you subscribe to a paid Service Tier, you may
+    opt out,” with “For the Teams Service Tier, only an administrator” able to opt
+    out, replacing narrower rules such as never using Autocomplete content for generative
+    models.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:58:43Z'
+- doc: Cursor/Terms of Service.md
+  date: '2025-04-19'
+  kind: change
+  clause: 96ff939c93fb
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: '"Unless you opt-in to allow" became "unless you allow". Same default.'
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:56:24Z'
+- doc: DeepSeek/Privacy Policy.md
+  date: '2025-02-23'
+  kind: change
+  clause: 2abf692cad31
+  state: published
+  classification: scope
+  direction: scope_widened
+  one_line: DeepSeek now says, in addition to training and improving its technology,
+    that it may obtain “publicly available information via the Internet sources in
+    order to train our models and provide services.”
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:59:00Z'
+- doc: DeepSeek/Privacy Policy.md
+  date: '2025-04-28'
+  kind: change
+  clause: 82ac38dbe3a1
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: '"Information" became "Personal Data".'
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:59:11Z'
+- doc: DeepSeek/Privacy Policy.md
+  date: '2025-12-23'
+  kind: change
+  clause: 0bbf9cbcba05
+  state: published
+  classification: position
+  direction: scope_narrowed
+  one_line: DeepSeek still says it may use Personal Data “to train our models” and
+    “to train and improve our technology,” but now adds “the right to opt-out of using
+    your Personal Data for training our models or optimizing our technologies.”
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:59:27Z'
+- doc: DeepSeek/Privacy Policy.md
+  date: '2026-02-10'
+  kind: change
+  clause: bf27cb484d32
+  state: published
+  classification: position
+  direction: now_trains
+  one_line: DeepSeek now says “certain entities within our corporate group” process
+    “the Personal Data You Provide, Automatically Collected Personal Data, and Personal
+    Data from Other Sources” for functions including “foundation model training and
+    optimization,” while still stating a “right to opt-out of using your Personal
+    Data for training our models or optimizing our technologies.”
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:59:47Z'
+- doc: GitHub Copilot/Terms of Service.md
+  date: '2024-12-19'
+  kind: change
+  clause: bfbd5cd398ef
+  state: published
+  classification: position
+  direction: now_trains
+  one_line: GitHub Copilot now says, “For GitHub Copilot Free users, the data collected
+    by GitHub Copilot may be used for AI Model training where permitted and if you
+    allow in your settings.”
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:54:30Z'
+- doc: GitHub Copilot/Terms of Service.md
+  date: '2026-04-27'
+  kind: change
+  clause: 8d98aff31297
+  state: published
+  classification: position
+  direction: now_trains
+  one_line: GitHub Copilot changed from training Free users' data only “if you allow
+    in your settings” to a license where “Your Content” may be used “including by
+    training AI Features,” private repository content provided as Input may be used
+    to “develop, train, and improve” subject to opt out, and Affiliates may use “Inputs
+    and Outputs” “Unless you opt out.”
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:54:51Z'
+- doc: Grok/Privacy Policy.md
+  date: '2026-05-18'
+  kind: change
+  clause: 323f234374b9
+  state: published
+  classification: scope
+  direction: scope_narrowed
+  one_line: Grok now says that “for users who opt to connect to Google Apps via Google
+    OAuth, xAI shall not use any Google Apps content for any of its internal AI or
+    other training purposes,” while still saying users can object to use of their
+    information to train models in settings.
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:55:47Z'
+- doc: Grok/Terms of Service.md
+  date: '2025-08-01'
+  kind: change
+  clause: 7ac0364100ad
+  state: published
+  classification: position
+  direction: scope_narrowed
+  one_line: Grok previously said it “may use” Materials “to develop, train, test,
+    improve and operate the Services,” but now says that when logged in “you can select
+    whether or not” User Content is used “to improve our products and services and
+    train our models,” while access without logging in, “where available” and “where
+    permitted,” grants “full rights” for “product development and model training purposes.”
+  note: OTA has no capture between 2023-11-20 and 2025-08-01
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:55:06Z'
+- doc: Jasper/Terms of Service.md
+  date: '2025-09-11'
+  kind: change
+  clause: 92b577d8ef7a
+  state: published
+  classification: position
+  direction: scope_narrowed
+  one_line: Jasper still takes a license to use Customer Property for "modifying,
+    improving, and enhancing artificial intelligence models" by default, but now adds
+    that "[f]or users located in the European Union or United Kingdom, you may have
+    the right to object" and on verified request Jasper "will cease using your Customer
+    Property for model training and improvement, subject to applicable law."
+  decided_by: panel
+  reviewed_at: '2026-09-25T14:00:03Z'
+- doc: Microsoft Copilot/Privacy Policy.md
+  date: '2025-07-15'
+  kind: change
+  clause: b502318e3406
+  state: published
+  classification: scope
+  direction: scope_narrowed
+  one_line: Microsoft Copilot still says it “may use your data to develop and train
+    our AI models,” but adds that Xbox’s AI-enhanced features “do not use children's
+    data for model training” for children “in certain jurisdictions.”
+  decided_by: panel
+  reviewed_at: '2026-09-25T13:53:51Z'
+tiers:
+- vendor: chatgpt
+  name: Free, Plus and Pro
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:08Z'
+- vendor: chatgpt
+  name: Business, Enterprise, Edu and API
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:12Z'
+- vendor: claude-ai
+  name: Free, Pro and Max
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:17Z'
+- vendor: claude-ai
+  name: Commercial (Team, Enterprise, API)
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:20Z'
+- vendor: cursor
+  name: All plans
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:01:02Z'
+- vendor: deepseek
+  name: Consumer app and platform
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:01:23Z'
+- vendor: github-copilot
+  name: Accounts under GitHub's Terms of Service
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:34Z'
+- vendor: grok
+  name: xAI API and enterprise
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:59Z'
+- vendor: jasper
+  name: All plans
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:01:28Z'
+- vendor: le-chat
+  name: Free, Pro and Student
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:01:36Z'
+- vendor: le-chat
+  name: Team and Enterprise
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:01:44Z'
+- vendor: perplexity
+  name: API
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:40Z'
+- vendor: perplexity
+  name: Enterprise (data processing agreement)
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:00:44Z'
+- vendor: windsurf
+  name: Free
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:01:13Z'
+- vendor: windsurf
+  name: Paid (Pro, Teams)
+  confirmed_by: panel
+  confirmed_at: '2026-09-25T14:01:16Z'

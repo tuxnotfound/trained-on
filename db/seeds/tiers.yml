@@ -34,9 +34,9 @@
 - vendor: microsoft-copilot
   name: Consumer Copilot
   document: Microsoft Copilot/Privacy Policy.md
-  answer: trains_opt_out
+  answer: trains_in_some_markets
   quote: In certain markets, we use conversation data to train the generative AI models in Copilot, unless you choose to opt-out of such training.
-  opt_out: Copilot settings. Stated for "certain markets" only.
+  opt_out: Copilot settings. Which markets is not stated.
   position: 0
 
 - vendor: github-copilot
@@ -63,9 +63,9 @@
 - vendor: grok
   name: Consumer (grok.com, X and apps)
   document: Grok/Terms of Service.md
-  answer: trains_opt_out
+  answer: your_choice_default_unstated
   quote: When logged into our Service, you can select whether or not you want us to use your User Content to improve our products and services and train our models.
-  opt_out: A setting when logged in. Logged-out use grants xAI "full rights" to use your data for model training.
+  opt_out: A setting when logged in; the terms do not say which way it starts. Logged-out use grants xAI "full rights" to use your data for model training.
   position: 0
 - vendor: grok
   name: xAI API and enterprise

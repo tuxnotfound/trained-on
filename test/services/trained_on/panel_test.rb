@@ -147,6 +147,15 @@ class TrainedOn::PanelTest < ActiveSupport::TestCase
     assert_equal "pending", @event.reload.state
   end
 
+  test "a lost anchor is sent to a person with a reason, without asking the readers" do
+    lost = @document.clause_events.create!(from_version: @old, to_version: @new, occurred_on: Date.new(2025, 3, 1), kind: "anchor_lost")
+    rs = readers("position", "position", "position")
+    outcome = TrainedOn::Panel.new(readers: rs, skeptic: skeptic(0)).review_event(lost)
+    assert_equal "human", outcome.decision
+    assert_match "no anchor matched", lost.reload.panel_reason
+    assert rs.all? { |r| r.asked.empty? }
+  end
+
   test "extraction-flagged and already-decided events are not decided by the panel" do
     @event.update!(suspected_extraction: true)
     outcome = TrainedOn::Panel.new(readers: readers("position", "position", "position"), skeptic: skeptic(0)).review_event(@event)

@@ -5,7 +5,7 @@ class PanelJob < ApplicationJob
 
   def perform(event_ids: nil, tier_ids: nil, force: false)
     panel = TrainedOn::Panel.new
-    events = event_ids ? ClauseEvent.where(id: event_ids) : ClauseEvent.pending.where(kind: "change")
+    events = event_ids ? ClauseEvent.where(id: event_ids) : ClauseEvent.pending
     events = events.where(panel: nil) unless force || event_ids
     events.includes(:from_version, :to_version, document: :vendor).find_each { |event| panel.review_event(event) }
 

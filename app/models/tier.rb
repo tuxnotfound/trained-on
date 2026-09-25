@@ -4,6 +4,8 @@ class Tier < ApplicationRecord
     "trains_opt_out" => "Trains on your inputs by default. You can opt out.",
     "trains_no_opt_out" => "Trains on your inputs. No opt-out stated.",
     "trains_regional_opt_out" => "Trains on your inputs. Opt-out only in some regions.",
+    "trains_in_some_markets" => "Trains on your inputs in certain markets. You can opt out.",
+    "your_choice_default_unstated" => "You choose in settings whether your inputs train models. The terms do not state the default.",
     "no_training_default" => "Does not train on your inputs by default.",
     "no_training" => "Does not train on your inputs.",
     "unclear" => "The terms do not say clearly."

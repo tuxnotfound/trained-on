@@ -73,6 +73,8 @@ module TrainedOn
       - trains_opt_out: trains on inputs by default; the user can opt out.
       - trains_no_opt_out: trains on inputs; no opt-out is stated.
       - trains_regional_opt_out: trains on inputs; an opt-out exists only in some regions.
+      - trains_in_some_markets: trains on inputs only in certain markets or regions; the user can opt out.
+      - your_choice_default_unstated: the user chooses in settings whether inputs are used for training, and the clause does not say what the default is.
       - no_training_default: does not train by default; may with an opt-in.
       - no_training: does not train on inputs.
       - unclear: the clause does not say clearly.
@@ -103,7 +105,11 @@ module TrainedOn
     # --- events ---------------------------------------------------------------
 
     def review_event(event)
-      return Outcome.new("skipped", "not a pending change") unless event.kind == "change" && event.state == "pending"
+      return Outcome.new("skipped", "already decided") unless event.state == "pending"
+      if event.kind == "anchor_lost"
+        return record_event(event, "human", "no anchor matched in this capture; a person must decide whether the clause moved or the capture broke", {})
+      end
+      return Outcome.new("skipped", "not a change") unless event.kind == "change"
       if event.suspected_extraction
         return record_event(event, "human", "coincides with a change to Open Terms Archive's capture rules; a person must compare the captures", {})
       end
