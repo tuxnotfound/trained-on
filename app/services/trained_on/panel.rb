@@ -4,10 +4,15 @@ module TrainedOn
   # another reader's answer, never the suggested verdict, never the vendor's
   # reputation. The panel publishes a change only when all three agree it is a
   # change of position, a scope change or a disclosure, and a final check
-  # accepts one of their summaries. Everything else waits for a person.
+  # accepts one of their summaries. When they agree it is real but differ on
+  # degree, the most cautious label wins: a change is never published as more
+  # than the least that all three readers saw. Everything else waits for a
+  # person.
   class Panel
     MIN_READERS = 3
     PUBLIC = ClauseEvent::PUBLIC_CLASSIFICATIONS
+    # From weakest claim to strongest.
+    CAUTION = %w[disclosure scope position].freeze
 
     Outcome = Data.define(:decision, :reason)
     Reading = Data.define(:provider, :model, :answer, :error) do
@@ -48,6 +53,7 @@ module TrainedOn
     SKEPTIC_SYSTEM = <<~PROMPT.freeze
       You check one-line summaries of a change to the clause in an AI vendor's terms about training on users' data. You see the old and new text and several candidate summaries.
       Choose the one summary that states only what the texts show, keeps every qualifier (such as "by default", "in certain markets", "unless you opt out"), names the company, quotes the decisive words, and attributes no motive. Between two accurate summaries prefer the shorter and more cautious one.
+      The change is being published under the label given as PUBLISHED AS. Reject a summary that claims more than that label: a "disclosure" summary may not say the practice changed, a "scope" summary may not say the default or the opt-out changed.
       If none is acceptable, or every one is longer than 35 words, answer -1 and say what is wrong with them.
       Answer with the 0-based index of your choice.
     PROMPT
@@ -178,23 +184,26 @@ module TrainedOn
       return [ "human", "no answer from #{failed.map(&:provider).join(', ')}: #{failed.map(&:error).join('; ')}", nil, {} ] if failed.any?
 
       classes = ok.map { |r| r.answer["classification"] }.uniq
-      if classes.size > 1
-        return [ "human", "readers disagree: " + ok.map { |r| "#{r.provider} says #{r.answer['classification']}" }.join(", "), nil, {} ]
-      end
+      votes = ok.map { |r| "#{r.provider} says #{r.answer['classification']}" }.join(", ")
+      real, noise = classes.partition { |c| PUBLIC.include?(c) }
+      return [ "human", "readers disagree on whether it is a real change: #{votes}", nil, {} ] if real.any? && noise.any?
       low = ok.select { |r| r.answer["confidence"] == "low" }
       if low.any?
         return [ "human", "not confident: " + low.map { |r| "#{r.provider}: #{r.answer['concerns'].presence || 'no reason given'}" }.join("; "), nil, {} ]
       end
+      if real.empty?
+        return [ "human", "readers disagree: #{votes}", nil, {} ] if noise.size > 1
+        return [ "rejected", "all #{ok.size} readers call it #{noise.first}", ok.first, {} ]
+      end
 
-      classification = classes.first
-      return [ "rejected", "all #{ok.size} readers call it #{classification}", ok.first, {} ] unless PUBLIC.include?(classification)
-
-      choice = pick_summary(user, ok)
+      classification = real.min_by { |c| CAUTION.index(c) }
+      agreement = real.size == 1 ? "all #{ok.size} readers agree: #{classification}" : "all #{ok.size} readers see a real change (#{votes}); published as the most cautious, #{classification}"
+      choice = pick_summary(user, ok, classification)
       index = choice["index"]
       if index.nil?
-        [ "human", "agreed it is #{classification}, but no summary was accepted: #{choice['reason']}", nil, { "skeptic" => choice } ]
+        [ "human", "#{agreement}, but no summary was accepted: #{choice['reason']}", nil, { "skeptic" => choice } ]
       else
-        [ "published", "all #{ok.size} readers agree: #{classification}; summary by #{ok[index].provider}", ok[index], { "skeptic" => choice } ]
+        [ "published", "#{agreement}; summary by #{ok[index].provider}", ok[index], { "skeptic" => choice, "published_as" => classification } ]
       end
     end
 
@@ -210,9 +219,9 @@ module TrainedOn
     end
 
     # The candidate summaries are shown unlabelled, in reader order.
-    def pick_summary(user, readings)
+    def pick_summary(user, readings, classification)
       candidates = readings.each_with_index.map { |r, i| "[#{i}] #{r.answer['one_line']}" }.join("\n")
-      answer = @skeptic.ask(system: SKEPTIC_SYSTEM, user: "#{user}\nCANDIDATE SUMMARIES:\n#{candidates}\n", schema: SKEPTIC_SCHEMA)
+      answer = @skeptic.ask(system: SKEPTIC_SYSTEM, user: "#{user}\nPUBLISHED AS: #{classification}\n\nCANDIDATE SUMMARIES:\n#{candidates}\n", schema: SKEPTIC_SCHEMA)
       index = Integer(answer["index"], exception: false)
       index = nil unless index && index.between?(0, readings.size - 1)
       { "provider" => @skeptic.provider, "model" => @skeptic.model, "index" => index, "reason" => answer["reason"].to_s }
@@ -246,7 +255,7 @@ module TrainedOn
       panel = result.merge("decision" => decision, "reason" => reason)
       case decision
       when "published"
-        event.update!(state: "published", classification: source.answer["classification"], direction: source.answer["direction"],
+        event.update!(state: "published", classification: result.fetch("published_as"), direction: source.answer["direction"],
                       one_line: source.answer["one_line"], decided_by: "panel", reviewed_at: Time.current, panel:)
       when "rejected"
         event.update!(state: "rejected", classification: source.answer["classification"], direction: source.answer["direction"],

@@ -28,11 +28,12 @@ The pipeline, in `app/services/trained_on/`:
    rebuild carries review decisions over.
 4. **Panel**: three readers, one model from each of three companies (Claude, GPT, Gemini),
    each classify the change from the old and new text alone. None sees the others' answers
-   or the suggested verdict. When all three agree it is a change of position, a scope change
-   or a disclosure, a summary check picks the most cautious of their one-line summaries and
-   the event is published, marked `decided_by: panel`. Unanimous wording or churn is
-   rejected. Disagreement, low confidence, a failed reader, an extraction-flagged event or a
-   lost anchor goes to a person. With fewer than three readers configured the panel only
+   or the suggested verdict. When all three agree it is a real change (position, scope or
+   disclosure), the event is published under the most cautious of their three labels, with a
+   summary check picking the most cautious of their one-line summaries; it is marked
+   `decided_by: panel`. Unanimous wording or churn is rejected. Disagreement on whether the
+   change is real, low confidence, a failed reader, an extraction-flagged event or a lost
+   anchor goes to a person. With fewer than three readers configured the panel only
    advises. Registry rows work the same way: the quote is checked mechanically against the
    latest capture, and the answer label is confirmed by the three readers or by a person.
 5. **Review**: `/admin` behind a login. What the panel could not settle is decided by a

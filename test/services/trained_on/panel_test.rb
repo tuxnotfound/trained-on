@@ -77,14 +77,36 @@ class TrainedOn::PanelTest < ActiveSupport::TestCase
     end
   end
 
-  test "disagreement waits for a person, with every answer kept" do
+  test "readers who all see a real change but differ on degree publish under the most cautious label" do
     outcome = TrainedOn::Panel.new(readers: readers("position", "scope", "position"), skeptic: skeptic(0)).review_event(@event)
+    assert_equal "published", outcome.decision
+    assert_match "published as the most cautious, scope", outcome.reason
+    @event.reload
+    assert_equal "scope", @event.classification
+    assert_equal "published", @event.state
+    assert_equal %w[position scope position], @event.panel["readers"].map { |r| r.dig("answer", "classification") }
+  end
+
+  test "the summary check is told the label the change is published under" do
+    sk = skeptic(0)
+    TrainedOn::Panel.new(readers: readers("position", "disclosure", "scope"), skeptic: sk).review_event(@event)
+    assert_includes sk.asked.first[:user], "PUBLISHED AS: disclosure"
+    assert_equal "disclosure", @event.reload.classification
+  end
+
+  test "disagreement on whether the change is real waits for a person, with every answer kept" do
+    outcome = TrainedOn::Panel.new(readers: readers("position", "wording", "position"), skeptic: skeptic(0)).review_event(@event)
     assert_equal "human", outcome.decision
-    assert_match "Reader B says scope", outcome.reason
+    assert_match "whether it is a real change: Reader A says position, Reader B says wording, Reader C says position", outcome.reason
     @event.reload
     assert_equal "pending", @event.state
     assert_equal "scope", @event.classification, "the suggestion is untouched"
-    assert_equal %w[position scope position], @event.panel["readers"].map { |r| r.dig("answer", "classification") }
+  end
+
+  test "readers who agree it is not a real change but differ on why wait for a person" do
+    outcome = TrainedOn::Panel.new(readers: readers("wording", "churn", "wording", direction: "wording_only"), skeptic: skeptic(0)).review_event(@event)
+    assert_equal "human", outcome.decision
+    assert_equal "pending", @event.reload.state
   end
 
   test "unanimous wording is rejected without a person" do
