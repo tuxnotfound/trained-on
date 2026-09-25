@@ -5,7 +5,7 @@ module TrainedOn
       PROVIDER = "GPT (OpenAI)".freeze
       KEY_ENV = "OPENAI_API_KEY".freeze
       MODEL_ENV = "TRAINED_ON_OPENAI_MODEL".freeze
-      DEFAULT_MODEL = "gpt-5".freeze
+      DEFAULT_MODEL = "gpt-5.5".freeze
       BASE = "https://api.openai.com/v1".freeze
 
       def initialize(transport: Http.method(:json))
