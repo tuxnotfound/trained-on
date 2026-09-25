@@ -43,11 +43,14 @@ Ruby 3.4.9 and git. The OTA corpus is a gitignored clone under `corpus/`, made o
 
 ```
 bundle install
+cp .env.example .env             # then set TRAINED_ON_ADMIN_PASSWORD in .env
 bin/rails db:prepare
 bin/rails trained_on:bootstrap   # clone corpus if missing, seed, rebuild history (about 45 s),
                                  # load suggested verdicts, replay review decisions
-TRAINED_ON_ADMIN_USER=me TRAINED_ON_ADMIN_PASSWORD=secret bin/dev
+bin/dev                          # admin at /admin, with the user and password from .env
 ```
+
+`.env` is gitignored and loaded in development only. `.env.example` lists every setting.
 
 Nothing is public until reviewed. The registry shows only what `db/seeds/decisions.yml` publishes. Open `/admin`, press
 **Preview the public site with drafts** to see everything marked as draft, then work

@@ -51,6 +51,10 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Loads .env in development only. Tests and production read real environment
+  # variables; values already set in the shell win over the file.
+  gem "dotenv", "~> 3.2"
 end
 
 # Trained On

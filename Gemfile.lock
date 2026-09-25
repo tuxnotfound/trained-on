@@ -357,6 +357,7 @@ DEPENDENCIES
   csv
   debug
   diff-lcs (~> 1.6)
+  dotenv (~> 3.2)
   importmap-rails
   kamal
   propshaft
