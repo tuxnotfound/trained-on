@@ -26,11 +26,18 @@ The pipeline, in `app/services/trained_on/`:
    collapses runs into `ClauseVersion`s. It emits a `ClauseEvent` per real transition and
    flags events that coincide with an OTA "technical or declaration upgrade" commit. A
    rebuild carries review decisions over.
-4. **Adjudicator**: Claude Haiku (`claude-haiku-4-5`) gives a first opinion on new events.
-   It uses structured output, only when `ANTHROPIC_API_KEY` is set, and never publishes.
-5. **Review**: `/admin` behind basic auth. Every event is published or rejected by a person.
-   Registry rows are drafts until marked verified. A row not verified in 30 days shows as
-   stale.
+4. **Panel**: three readers, one model from each of three companies (Claude, GPT, Gemini),
+   each classify the change from the old and new text alone. None sees the others' answers
+   or the suggested verdict. When all three agree it is a change of position, a scope change
+   or a disclosure, a summary check picks the most cautious of their one-line summaries and
+   the event is published, marked `decided_by: panel`. Unanimous wording or churn is
+   rejected. Disagreement, low confidence, a failed reader, an extraction-flagged event or a
+   lost anchor goes to a person. With fewer than three readers configured the panel only
+   advises. Registry rows work the same way: the quote is checked mechanically against the
+   latest capture, and the answer label is confirmed by the three readers or by a person.
+5. **Review**: `/admin` behind a login. What the panel could not settle is decided by a
+   person, with the readers' answers side by side. A row whose latest capture is over 30
+   days old shows as stale.
 
 Public pages: `/` is the registry, `/vendors/:slug` a vendor's plans and full clause
 history, `/changes` and `/changes/:date-:vendor-:document` the change pages, `/methodology`
@@ -58,11 +65,16 @@ through the queue. In development, `?preview=1` also works.
 
 ## Reviewing
 
-- **Queue** (`/admin`): each candidate shows the word diff, the evidence commits, the OTA
-  extraction flag, Haiku's opinion when available, and the suggested verdict. Publish needs
-  a public classification (position, scope or disclosure) and a one-line summary.
-- **Registry rows**: check each quote against the vendor's live page, then press
-  **Verified today**. Quotes must be verbatim in the tracked clause, which the model enforces.
+- **Panel first.** Put the three API keys in `.env`, run `bin/rails trained_on:panel_check`
+  to confirm keys and model ids, then `bin/rails trained_on:panel` (or the button in
+  `/admin`). It prints what was published, what was rejected, and what waits for a person.
+- **Queue** (`/admin`): what is left shows the word diff, the evidence commits, the OTA
+  extraction flag, each reader's answer and the reason the panel did not decide. Publish
+  needs a public classification (position, scope or disclosure) and a one-line summary.
+- **Registry rows**: the quote must be verbatim in the tracked clause (enforced) and present
+  in the latest capture (checked on every rebuild). The answer label is confirmed by the
+  panel, or by you with **Confirm answer**. When a vendor changes position, update the row
+  in `db/seeds/tiers.yml`; the digest tells you when a quote drops out of the latest capture.
 - **Decisions are files, not database rows.** Every publish, reject and verification made in
   development is written to `db/seeds/decisions.yml` straight away. Commit it: git is the audit
   trail, and a deploy replays it with `trained_on:apply_decisions`. A decision whose clause has
@@ -74,9 +86,10 @@ through the queue. In development, `?preview=1` also works.
 ## Nightly refresh
 
 `NightlyRefreshJob` runs at 04:00 through Solid Queue (`config/recurring.yml`). It pulls
-the corpus, cloning it on first run, and rebuilds every document. It asks Haiku about new
-events and emails `TRAINED_ON_REVIEWER`. It never publishes. Run it by hand with
-`bin/rails runner NightlyRefreshJob.perform_now`.
+the corpus, cloning it on first run, rebuilds every document, re-checks registry quotes,
+runs the panel over new events and unconfirmed rows, and emails `TRAINED_ON_REVIEWER` what
+was published and what waits. Nothing is published unless three readers agree. Run it by
+hand with `bin/rails runner NightlyRefreshJob.perform_now`.
 
 ## Tests
 
@@ -99,7 +112,7 @@ corpus clone live on the `trained_on_storage` volume. Solid Queue runs inside Pu
 export TRAINED_ON_SERVER_IP=... TRAINED_ON_HOST=... TRAINED_ON_REGISTRY=ghcr.io/<user>/trained-on
 export KAMAL_REGISTRY_USERNAME=... KAMAL_REGISTRY_PASSWORD=... TRAINED_ON_ADMIN_PASSWORD=...
 export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...  # optional: email digest
-export ANTHROPIC_API_KEY=...                                                          # optional: Haiku opinions
+export ANTHROPIC_API_KEY=... OPENAI_API_KEY=... GEMINI_API_KEY=...                    # the panel; all three or it only advises
 bin/kamal setup
 bin/kamal bootstrap   # clone the corpus, seed, rebuild history, replay review decisions
 ```
@@ -109,7 +122,7 @@ Put Cloudflare in front for the launch spike. `bin/kamal backup` writes a SQLite
 
 ## Layout
 
-- `app/services/trained_on/`: normaliser, net, locator, corpus, backfill, extraction check, word diff, adjudicator.
+- `app/services/trained_on/`: normaliser, net, locator, corpus, backfill, extraction check, word diff, panel, readers, decisions.
 - `db/seeds/`: `anchors.yml` (what is tracked), `tiers.yml` (registry rows), `reviews.yml` (suggested verdicts).
 - `scripts/denoise.rb` and `results/`: the original go/no-go test, its report, and the 2026-09-25 human read.
 - `test/fixtures/files/`: real OTA documents behind the regression tests.

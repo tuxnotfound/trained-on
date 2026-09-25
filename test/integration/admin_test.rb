@@ -65,6 +65,7 @@ class AdminTest < ActionDispatch::IntegrationTest
     patch admin_event_path(@event.id), params: { decision: "publish", clause_event: { one_line: "Acme now trains on your data." } }, headers: @auth
     assert_redirected_to admin_root_path
     assert_equal "published", @event.reload.state
+    assert_equal "human", @event.decided_by
 
     get change_path(@event)
     assert_response :success
@@ -82,6 +83,19 @@ class AdminTest < ActionDispatch::IntegrationTest
     get root_path
     assert_match "Acme trains.", response.body
     assert_match "draft", response.body
+  end
+
+  test "a person confirms or withdraws a registry row's answer" do
+    tier = @document.vendor.tiers.create!(name: "Free", answer: "trains_opt_out", document: @document, quote: "We may train on your data.")
+    patch admin_tier_path(tier), headers: @auth
+    assert_equal "human", tier.reload.confirmed_by
+    patch admin_tier_path(tier, withdraw: 1), headers: @auth
+    assert_nil tier.reload.confirmed_by
+  end
+
+  test "the panel can be queued from the admin" do
+    assert_enqueued_with(job: PanelJob) { post admin_panel_path, headers: @auth }
+    assert_enqueued_with(job: PanelJob, args: [ { event_ids: [ @event.id ] } ]) { post panel_admin_event_path(@event.id), headers: @auth }
   end
 
   test "anchor edits and rebuilds are available per document" do

@@ -12,7 +12,7 @@
       <%= answer_badge(tier) %>
       <blockquote class="quote"><span class="q"><%= tier.quote %></span><cite><%= tier.document && (tier.document.source_urls.present? ? link_to(tier.document.name, tier.document.source_urls.first, rel: "noopener") : tier.document.name) %></cite></blockquote>
       <% if tier.opt_out.present? %><p class="small"><%= tier.opt_out %></p><% end %>
-      <p class="meta">On record since <%= in_force_since(tier, inline: true) %> · checked <%= tier.verified_on ? date_tag(tier.verified_on) : "not yet" %><% if tier.stale? && tier.verified_on %> · <span class="stale">over 30 days ago</span><% end %></p>
+      <p class="meta">On record since <%= in_force_since(tier, inline: true) %> · in the capture of <%= date_tag(tier.verified_on) %><% if tier.stale? %> · <span class="stale">over 30 days old</span><% end %></p>
     </section>
   <% end %>
 </div>

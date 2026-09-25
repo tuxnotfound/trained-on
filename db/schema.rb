@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_25_102830) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_111140) do
   create_table "anchors", force: :cascade do |t|
     t.integer "document_id", null: false
     t.string "phrase"
@@ -30,12 +30,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_102830) do
     t.string "classification"
     t.string "direction"
     t.text "one_line"
-    t.json "llm_verdict"
+    t.json "panel"
     t.boolean "suspected_extraction", default: false, null: false
     t.datetime "reviewed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "note"
+    t.string "decided_by"
     t.index ["document_id", "to_version_id", "kind"], name: "index_clause_events_on_document_id_and_to_version_id_and_kind", unique: true
     t.index ["document_id"], name: "index_clause_events_on_document_id"
     t.index ["from_version_id"], name: "index_clause_events_on_from_version_id"
@@ -84,6 +85,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_102830) do
     t.integer "position", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "confirmed_by"
+    t.datetime "confirmed_at"
+    t.json "panel"
     t.index ["document_id"], name: "index_tiers_on_document_id"
     t.index ["vendor_id"], name: "index_tiers_on_vendor_id"
   end

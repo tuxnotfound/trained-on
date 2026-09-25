@@ -13,10 +13,39 @@
   <dt>State</dt><dd><%= @event.state %><%= " · reviewed #{l(@event.reviewed_at.to_date, format: :long)}" if @event.reviewed_at %></dd>
   <dt>Evidence</dt><dd><%= link_to "new capture", @event.to_version.ota_commit_url, target: "_blank", rel: "noopener" %><% if @event.from_version %> · <%= link_to "old capture", @event.from_version.ota_commit_url, target: "_blank", rel: "noopener" %><% end %></dd>
   <dt>Live page</dt><dd><%= safe_join(Array(@event.document.source_urls).map { |u| link_to(u.sub(%r{\Ahttps?://}, ""), u, target: "_blank", rel: "noopener") }, " · ") %></dd>
-  <% if @event.llm_verdict %>
-    <dt>Haiku</dt><dd><%= @event.llm_verdict["classification"] %> / <%= @event.llm_verdict["direction"] %>: <%= @event.llm_verdict["one_line"] %></dd>
-  <% end %>
+  <% if @event.decided_by %><dt>Decided by</dt><dd><%= @event.decided_by %></dd><% end %>
 </dl>
+
+<h2>The panel</h2>
+<% if @event.panel %>
+  <p><strong><%= @event.panel_decision %></strong>: <%= @event.panel_reason %> <span class="muted">(<%= @event.panel["ran_at"] %>)</span></p>
+  <% readers = Array(@event.panel["readers"]) %>
+  <% if readers.any? %>
+    <div class="scroll-x"><table class="plain">
+      <thead><tr><th>Reader</th><th>Class</th><th>Direction</th><th>Confidence</th><th>Summary</th><th>Concerns</th></tr></thead>
+      <tbody>
+        <% readers.each do |r| %>
+          <% a = r["answer"] || {} %>
+          <tr>
+            <td class="small"><%= r["provider"] %><br><span class="muted"><%= r["model"] %></span></td>
+            <% if r["error"] %>
+              <td colspan="5" class="errors small"><%= r["error"] %></td>
+            <% else %>
+              <td><%= a["classification"] %></td><td class="small"><%= a["direction"] %></td><td class="small"><%= a["confidence"] %></td>
+              <td class="small"><%= a["one_line"] %></td><td class="small muted"><%= a["concerns"] %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table></div>
+  <% end %>
+  <% if (sk = @event.panel["skeptic"]) %>
+    <p class="small">Summary check by <%= sk["provider"] %>: <%= sk["index"] ? "chose summary #{sk['index'] + 1}" : "accepted none" %>. <%= sk["reason"] %></p>
+  <% end %>
+<% else %>
+  <p class="muted">The panel has not run on this event.</p>
+<% end %>
+<%= button_to "Run the panel on this event", panel_admin_event_path(@event.id), class: "btn btn--small" %>
 <% if @event.note.present? %><p class="note"><%= @event.note %></p><% end %>
 
 <% if @event.kind == "anchor_lost" %>

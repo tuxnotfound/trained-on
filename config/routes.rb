@@ -24,7 +24,10 @@ Rails.application.routes.draw do
     get "login", to: "sessions#new", as: :login
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy", as: :logout
-    resources :events, only: %i[index show update]
+    resources :events, only: %i[index show update] do
+      post :panel, on: :member
+    end
+    post "panel", to: "panel#run", as: :panel
     resources :tiers, only: :update
     resources :documents, only: :show do
       post :rebuild, on: :member

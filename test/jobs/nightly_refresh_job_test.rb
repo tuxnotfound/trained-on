@@ -43,8 +43,8 @@ class NightlyRefreshJobTest < ActiveJob::TestCase
     version = document.clause_versions.create!(text: "We train.", sha256: "x", effective_at: Time.current, ota_commit_sha: "c" * 40)
     event = document.clause_events.create!(to_version: version, occurred_on: Date.current)
     mail = ReviewMailer.digest([ event.id ])
-    assert_match "1 event to review", mail.subject
+    assert_match "0 published, 1 waiting for you", mail.subject
     assert_match "/admin/events/#{event.id}", mail.body.encoded
-    assert_match "Nothing has been published", mail.body.encoded
+    assert_match "three readers from three companies agree", mail.body.encoded
   end
 end

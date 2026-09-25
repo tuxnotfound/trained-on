@@ -1,7 +1,7 @@
 require "yaml"
 
 module TrainedOn
-  # Human review decisions as a committed file, db/seeds/decisions.yml.
+  # Review decisions as a committed file, db/seeds/decisions.yml.
   #
   # Reviewing happens wherever the admin runs; the database is not the record.
   # Every publish, reject and verification is exported here (automatically in
@@ -16,7 +16,7 @@ module TrainedOn
     PATH = Rails.root.join("db/seeds/decisions.yml")
     HASH_PREFIX = 12
     HEADER = <<~TEXT
-      # Human review decisions, written by the review admin (development) or by
+      # Review decisions (by the panel or a person), written by the review admin (development) or by
       # `bin/rails trained_on:export_decisions`. Replayed with
       # `bin/rails trained_on:apply_decisions`. Do not edit by hand: review in /admin.
     TEXT
@@ -25,17 +25,17 @@ module TrainedOn
 
     def export!(path = PATH)
       events = ClauseEvent.where.not(reviewed_at: nil).includes(:to_version, :document).sort_by { |e| [ e.document.ota_path, e.occurred_on, e.kind ] }
-      tiers = Tier.where.not(verified_on: nil).includes(:vendor).sort_by { |t| [ t.vendor.slug, t.position ] }
+      tiers = Tier.where.not(confirmed_by: nil).includes(:vendor).sort_by { |t| [ t.vendor.slug, t.position ] }
       data = {
         "events" => events.map do |e|
           {
             "doc" => e.document.ota_path, "date" => e.occurred_on.iso8601, "kind" => e.kind,
             "clause" => e.to_version.sha256[0, HASH_PREFIX], "state" => e.state,
             "classification" => e.classification, "direction" => e.direction,
-            "one_line" => e.one_line, "note" => e.note, "reviewed_at" => e.reviewed_at.utc.iso8601
+            "one_line" => e.one_line, "note" => e.note, "decided_by" => e.decided_by, "reviewed_at" => e.reviewed_at.utc.iso8601
           }.compact
         end,
-        "tiers" => tiers.map { |t| { "vendor" => t.vendor.slug, "name" => t.name, "verified_on" => t.verified_on.iso8601 } }
+        "tiers" => tiers.map { |t| { "vendor" => t.vendor.slug, "name" => t.name, "confirmed_by" => t.confirmed_by, "confirmed_at" => t.confirmed_at&.utc&.iso8601 }.compact }
       }
       File.write(path, HEADER + data.to_yaml.delete_prefix("---\n"))
       data
@@ -53,14 +53,14 @@ module TrainedOn
         event = document&.clause_events&.includes(:to_version)&.find_by(occurred_on: row.fetch("date"), kind: row.fetch("kind"))
         next missing << "#{row['doc']} #{row['date']}" unless event
         next stale << "#{row['doc']} #{row['date']}" unless event.to_version.sha256.start_with?(row.fetch("clause"))
-        event.update!(row.slice("state", "classification", "direction", "one_line", "note").merge("reviewed_at" => Time.iso8601(row.fetch("reviewed_at"))))
+        event.update!(row.slice("state", "classification", "direction", "one_line", "note", "decided_by").merge("reviewed_at" => Time.iso8601(row.fetch("reviewed_at"))))
         applied += 1
       end
 
       Array(data["tiers"]).each do |row|
         tier = Vendor.find_by(slug: row.fetch("vendor"))&.tiers&.find_by(name: row.fetch("name"))
         next missing << "tier #{row['vendor']} / #{row['name']}" unless tier
-        tier.update!(verified_on: Date.iso8601(row.fetch("verified_on")))
+        tier.update_columns(confirmed_by: row.fetch("confirmed_by"), confirmed_at: row["confirmed_at"] && Time.iso8601(row["confirmed_at"]))
         applied += 1
       end
 

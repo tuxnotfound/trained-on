@@ -18,6 +18,8 @@
       <% if @event.from_version %> · <%= link_to "last capture with the old text", @event.from_version.ota_commit_url %><% end %>
     </dd>
     <dt>Vendor</dt><dd><%= link_to "All #{@vendor.name} plans and changes", vendor_path(@vendor) %></dd>
+    <dt>Decided by</dt>
+    <dd><% if @event.decided_by_panel? %>Three independent AI readers agreed: <%= @event.panel_providers.join(", ") %>. <%= link_to "How that works", methodology_path(anchor: "review") %>.<% else %>A person, after reading both versions.<% end %></dd>
   </dl>
 
   <% if @event.suspected_extraction %>

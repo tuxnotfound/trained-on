@@ -13,12 +13,12 @@ class TrainedOn::DecisionsTest < ActiveSupport::TestCase
 
   def reset_review_state
     @event.update_columns(state: "pending", reviewed_at: nil, one_line: "Suggested.")
-    @tier.update_columns(verified_on: nil)
+    @tier.update_columns(confirmed_by: nil, confirmed_at: nil)
   end
 
   test "a published event and a verified row survive a fresh database via the file" do
-    @event.update!(one_line: "Acme started training on your data by default.", state: "published", reviewed_at: Time.utc(2026, 9, 25, 10))
-    @tier.update!(verified_on: Date.new(2026, 9, 25))
+    @event.update!(one_line: "Acme started training on your data by default.", state: "published", decided_by: "panel", reviewed_at: Time.utc(2026, 9, 25, 10))
+    @tier.update_columns(confirmed_by: "human", confirmed_at: Time.utc(2026, 9, 25, 11))
     TrainedOn::Decisions.export!(@path)
 
     reset_review_state
@@ -28,7 +28,9 @@ class TrainedOn::DecisionsTest < ActiveSupport::TestCase
     @event.reload
     assert_equal "published", @event.state
     assert_equal "Acme started training on your data by default.", @event.one_line
-    assert_equal Date.new(2026, 9, 25), @tier.reload.verified_on
+    assert_equal "panel", @event.decided_by
+    assert_equal "human", @tier.reload.confirmed_by
+    assert_equal Time.utc(2026, 9, 25, 11), @tier.confirmed_at
   end
 
   test "pending events are not exported" do

@@ -48,6 +48,12 @@ class ClauseEvent < ApplicationRecord
   end
 
   def draft? = state != "published"
+  def decided_by_panel? = decided_by == "panel"
+
+  # Reader providers that took part, for the public "decided by" line.
+  def panel_providers = Array(panel&.dig("readers")).map { |r| r["provider"] }.compact
+  def panel_reason = panel&.dig("reason")
+  def panel_decision = panel&.dig("decision")
 
   # OTA can go weeks without a capture. The honest date of a change is the
   # window between the last capture of the old text and the first of the new.

@@ -8,7 +8,7 @@
   <div class="stat"><b><%= number_with_delimiter(@phantoms) %></b><span>identical to the previous version once normalised</span></div>
   <div class="stat"><b><%= @states %></b><span>distinct states of the training clause</span></div>
   <div class="stat"><b><%= @candidates %></b><span>candidate changes sent to review</span></div>
-  <div class="stat"><b><%= @published %></b><span>published after review</span></div>
+  <div class="stat"><b><%= @published %></b><span>published after review, <%= @by_panel %> by the readers</span></div>
 </div>
 
 <h2>Why most recorded changes are not changes</h2>
@@ -23,7 +23,7 @@
   <li><strong>Locate by anchor.</strong> For every tracked document a person chose short, stable phrases that identify the sentences of the training clause, such as "use your inputs and outputs to train". A segment belongs to the clause when it contains one of them. The anchors are listed below, so anyone can check what is and is not tracked.</li>
   <li><strong>Hash and collapse.</strong> The located clause is hashed. Consecutive versions with the same hash collapse into one clause state, however many times the rest of the document changed.</li>
   <li><strong>Emit candidates.</strong> Each change of state becomes a candidate event. If no anchor matches at all, that is also an event, never silence: the vendor may have moved the clause, or Open Terms Archive's capture may have broken. Events that coincide with Open Terms Archive changing its own capture rules are flagged.</li>
-  <li><strong>Review.</strong> A person reads every candidate. It is classified as a change of position, a scope change, a new disclosure, wording only, or not a real change. Only the first three are published, each with a one-line summary. A language model may offer a first opinion, but it never decides and never locates the clause.</li>
+  <li id="review"><strong>Review by three readers.</strong> Each candidate goes to three language models from three companies: Claude (Anthropic), GPT (OpenAI) and Gemini (Google). Each sees only the old and new text of the clause, never the others' answers, and classifies the change as a change of position, a scope change, a new disclosure, wording only, or not a real change. When all three agree it is one of the first three, a further check picks the most cautious of their one-line summaries, and the change is published, marked "three independent AI readers agreed". When they disagree, when any of them is unsure, when the archive changed how it captures the page, or when the clause could not be found, a person decides. Wording-only and capture changes are never published. Registry rows work the same way: the quote is checked mechanically against the latest capture, and the answer label is confirmed by the same three readers or by a person.</li>
 </ol>
 
 <h2>What the dates mean</h2>

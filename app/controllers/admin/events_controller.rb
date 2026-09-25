@@ -10,6 +10,7 @@ module Admin
       @by_class = ClauseEvent.where(state: @state).group(:classification).count
       @counts = ClauseEvent.group(:state).count
       @tiers = Tier.includes(:vendor, document: :clause_versions).order("vendors.position", :position).references(:vendor)
+      @panel = TrainedOn::Panel.new
       @unanchored = Document.includes(:vendor, :clause_versions).select { |d| d.current_version&.unanchored_hits.present? }
     end
 
@@ -18,9 +19,16 @@ module Admin
       @diff = TrainedOn::WordDiff.new(@event.from_version&.text, @event.to_version.text)
     end
 
+    def panel
+      event = ClauseEvent.find(params[:id])
+      PanelJob.perform_later(event_ids: [ event.id ])
+      redirect_to admin_event_path(event.id), notice: "Panel queued for this event. Refresh in a minute or two."
+    end
+
     def update
       @event = ClauseEvent.find(params[:id])
       @event.assign_attributes(event_params)
+      @event.decided_by = "human" if params[:decision].in?(%w[publish reject])
       case params[:decision]
       when "publish" then @event.state = "published"
       when "reject" then @event.state = "rejected"

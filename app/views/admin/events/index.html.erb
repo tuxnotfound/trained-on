@@ -1,6 +1,11 @@
 <% page_title "Review queue" %>
 <h1>Review queue</h1>
-<p class="lede">Nothing reaches the public pages until it is published here. Suggested verdicts are pre-filled. Read the diff, correct them if needed, then publish or reject.</p>
+<p class="lede">Three readers from three companies decide what they can. What is left here is what they could not settle: read the diff and their answers, then publish or reject.</p>
+<p class="small">
+  Panel: <%= @panel.readers.map { |r| "#{r.provider} (#{r.model})" }.join(", ").presence || "no readers configured" %>.
+  <% unless @panel.enough_readers? %><strong class="errors">Fewer than <%= TrainedOn::Panel::MIN_READERS %> readers: the panel advises but decides nothing.</strong><% end %>
+  <%= button_to "Run the panel on everything pending", admin_panel_path, class: "btn btn--small", form: { style: "display:inline" } %>
+</p>
 <p>
   <% ClauseEvent::STATES.each do |state| %>
     <%= link_to "#{state.capitalize} (#{@counts[state].to_i})", admin_events_path(state:), style: ("font-weight:600" if state == @state) %> ·
@@ -23,7 +28,7 @@
 
 <div class="scroll-x">
 <table class="plain queue">
-  <thead><tr><th>Recorded</th><th>Document</th><th>Suggested</th><th>Summary</th><th></th></tr></thead>
+  <thead><tr><th>Recorded</th><th>Document</th><th>Class</th><th>Summary</th><th>Panel</th><th></th></tr></thead>
   <tbody>
     <%= render partial: "admin/events/row", collection: @events, as: :event %>
   </tbody>
@@ -41,21 +46,29 @@
 <% end %>
 
 <h2 id="registry">Registry rows</h2>
-<p class="small">Check each quote against the vendor's live page before marking it verified. A row not re-verified in 30 days shows as stale.</p>
+<p class="small">The quote is checked mechanically against the latest capture. The answer label is confirmed by the panel, or by you. A row is public once both hold.</p>
 <div class="scroll-x">
 <table class="plain">
-  <thead><tr><th>Vendor and plan</th><th>Answer</th><th>Quote</th><th>Live page</th><th>Verified</th><th></th></tr></thead>
+  <thead><tr><th>Vendor and plan</th><th>Answer</th><th>Quote</th><th>Live page</th><th>In capture of</th><th>Answer confirmed</th><th></th></tr></thead>
   <tbody>
     <% @tiers.each do |tier| %>
       <tr>
         <td><%= tier.vendor.name %>, <%= tier.name %></td>
         <td><%= answer_badge(tier) %></td>
-        <td class="small"><%= tier.quote_in_clause? ? "" : tag.strong("NOT IN CLAUSE ", class: "errors") %>“<%= tier.quote %>”</td>
+        <td class="small"><%= tier.verified_on ? "" : tag.strong("NOT IN LATEST CAPTURE ", class: "errors") %>“<%= tier.quote %>”</td>
         <td class="small"><%= safe_join(Array(tier.document&.source_urls).each_with_index.map { |u, i| link_to("page #{i + 1}", u, target: "_blank", rel: "noopener") }, " ") %></td>
-        <td><%= tier.verified_on ? date_tag(tier.verified_on) : "draft" %></td>
+        <td><%= tier.verified_on ? date_tag(tier.verified_on) : "no" %></td>
+        <td class="small">
+          <% if tier.confirmed? %>by <%= tier.confirmed_by %><% if tier.confirmed_at %>, <%= date_tag(tier.confirmed_at) %><% end %><% else %><strong class="errors">not yet</strong><% end %>
+          <% if tier.panel_reason %><br><span class="muted">panel: <%= tier.panel_reason %></span><% end %>
+        </td>
         <td>
-          <%= button_to "Verified today", admin_tier_path(tier), method: :patch, class: "btn btn--small" %>
-          <% if tier.verified_on %><%= button_to "Back to draft", admin_tier_path(tier, unverify: 1), method: :patch, class: "btn btn--small" %><% end %>
+          <% if tier.confirmed? %>
+            <%= button_to "Withdraw", admin_tier_path(tier, withdraw: 1), method: :patch, class: "btn btn--small" %>
+          <% else %>
+            <%= button_to "Confirm answer", admin_tier_path(tier), method: :patch, class: "btn btn--small" %>
+            <%= button_to "Ask the panel", admin_tier_path(tier, panel: 1), method: :patch, class: "btn btn--small" %>
+          <% end %>
         </td>
       </tr>
     <% end %>

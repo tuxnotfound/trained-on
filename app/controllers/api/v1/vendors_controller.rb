@@ -22,7 +22,7 @@ module Api
         {
           "vendor" => tier.vendor.name, "plan" => tier.name, "answer" => tier.answer, "answer_text" => tier.answer_text,
           "quote" => tier.quote, "document" => tier.document&.name, "effective_on" => tier.effective_on&.iso8601,
-          "verified_on" => tier.verified_on&.iso8601, "source_url" => tier.document&.ota_history_url,
+          "verified_on" => tier.verified_on&.iso8601, "confirmed_by" => tier.confirmed_by, "source_url" => tier.document&.ota_history_url,
           "opt_out" => tier.opt_out, "vendor_url" => vendor_url(tier.vendor)
         }
       end

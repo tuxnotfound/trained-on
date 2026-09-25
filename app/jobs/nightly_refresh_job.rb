@@ -1,6 +1,6 @@
 # The only recurring job. Pull the OTA corpus, rebuild every document's clause
-# history, ask Haiku for a first opinion on anything new, and email the
-# reviewer. Nothing is ever published here: new events arrive pending.
+# history, let the panel decide what it can, and email the reviewer what it
+# could not. Nothing is published without three readers agreeing.
 class NightlyRefreshJob < ApplicationJob
   queue_as :default
 
@@ -14,19 +14,20 @@ class NightlyRefreshJob < ApplicationJob
     new_events = Document.includes(:vendor).flat_map do |document|
       TrainedOn::Backfill.new(document, corpus:).call.created_events
     end
+    Tier.refresh_verification!
 
-    adjudicator = TrainedOn::Adjudicator.new
-    new_events.each do |event|
-      next if event.kind != "change"
-      verdict = adjudicator.call(event)
-      event.update!(llm_verdict: verdict) if verdict
-    end
+    # A changed clause puts its registry rows back in front of the panel.
+    # A person's confirmation stands.
+    changed = new_events.select { |e| e.kind == "change" }.map(&:document_id).uniq
+    Tier.where(document_id: changed, confirmed_by: "panel").update_all(confirmed_by: nil, confirmed_at: nil, panel: nil)
 
-    return if new_events.empty?
+    PanelJob.perform_now
+
+    return if new_events.empty? && Tier.unconfirmed.none?
     if ReviewMailer.reviewer
       ReviewMailer.digest(new_events.map(&:id)).deliver_later
     else
-      Rails.logger.warn("[nightly] #{new_events.size} new events pending review; set TRAINED_ON_REVIEWER to be emailed")
+      Rails.logger.warn("[nightly] #{new_events.size} new events; set TRAINED_ON_REVIEWER to be emailed")
     end
   end
 end

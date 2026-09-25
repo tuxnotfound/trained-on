@@ -28,12 +28,24 @@ class TierTest < ActiveSupport::TestCase
     assert_equal Date.new(2025, 1, 5), tier.previous_capture_on
   end
 
-  test "unverified or old rows are stale" do
+  test "verification is mechanical: the date of the latest capture holding the quote" do
     tier = @vendor.tiers.create!(name: "Free", answer: "trains_opt_out", document: @document, quote: "We train on your data.")
     assert tier.stale?
-    tier.update!(verified_on: Date.current)
-    assert_not tier.stale?
-    tier.update!(verified_on: 31.days.ago.to_date)
-    assert tier.stale?
+    Tier.refresh_verification!
+    assert_equal Date.new(2025, 3, 5), tier.reload.verified_on
+    assert tier.stale?, "a capture from 2025 is older than 30 days"
+
+    gone = @vendor.tiers.create!(name: "Pro", answer: "trains_opt_out", document: @document, quote: "Extra.")
+    gone.update_columns(quote: "Not in any capture.")
+    Tier.refresh_verification!
+    assert_nil gone.reload.verified_on
+  end
+
+  test "a row is public only when the quote is current and the answer is confirmed" do
+    tier = @vendor.tiers.create!(name: "Free", answer: "trains_opt_out", document: @document, quote: "We train on your data.")
+    Tier.refresh_verification!
+    assert_not Tier.verified.exists?(tier.id)
+    tier.update_columns(confirmed_by: "human", confirmed_at: Time.current)
+    assert Tier.verified.exists?(tier.id)
   end
 end

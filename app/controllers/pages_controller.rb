@@ -6,6 +6,7 @@ class PagesController < ApplicationController
     @states = @documents.sum { |d| d.clause_versions.size }
     @candidates = ClauseEvent.count
     @published = ClauseEvent.published.count
+    @by_panel = ClauseEvent.published.where(decided_by: "panel").count
     @rejected = ClauseEvent.where(state: "rejected").count
   end
 

@@ -16,7 +16,25 @@ class Tier < ApplicationRecord
   validates :name, presence: true
   validates :answer, inclusion: { in: ANSWERS.keys }
 
-  scope :verified, -> { where.not(verified_on: nil) }
+  # Public rows: the quote is in the latest capture, and the answer label was
+  # confirmed by the panel or by a person.
+  scope :verified, -> { where.not(verified_on: nil).where.not(confirmed_by: nil) }
+  scope :unconfirmed, -> { where(confirmed_by: nil) }
+
+  # verified_on is mechanical: the date of the latest OTA capture whose located
+  # clause contains the quote, or nil when the quote has dropped out (a person
+  # must then update the row in db/seeds/tiers.yml).
+  def self.refresh_verification!
+    includes(document: :clause_versions).find_each do |tier|
+      version = tier.document&.last_located_version
+      current = version && tier.send(:contains_quote?, version.text)
+      tier.update_columns(verified_on: current ? version.last_seen_at.to_date : nil)
+    end
+  end
+
+  def confirmed? = confirmed_by.present?
+  def panel_reason = panel&.dig("reason")
+  def panel_decision = panel&.dig("decision")
 
   def answer_text = ANSWERS.fetch(answer)
   def stale? = verified_on.nil? || verified_on < STALE_AFTER.ago.to_date

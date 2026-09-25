@@ -8,6 +8,36 @@ namespace :trained_on do
       versions = document.clause_versions.count
       puts format("%-45s %3d states %3d events (%d new)", document.ota_path, versions, document.clause_events.count, run.created_events.size)
     end
+    Tier.refresh_verification!
+  end
+
+  desc "Run the panel over pending change events and unconfirmed registry rows (FORCE=1 to redo)"
+  task panel: :environment do
+    panel = TrainedOn::Panel.new
+    puts "Readers: #{panel.readers.map { |r| "#{r.provider} #{r.model}" }.join(', ').presence || 'none configured'}"
+    puts "Fewer than #{TrainedOn::Panel::MIN_READERS} readers: the panel advises but decides nothing." unless panel.enough_readers?
+    PanelJob.perform_now(force: ENV["FORCE"].present?)
+    puts ClauseEvent.group(:state, :decided_by).count.map { |(state, by), n| "#{n} #{state}#{by ? " by #{by}" : ''}" }.sort.join("\n")
+    puts "Rows: #{Tier.verified.count} public, #{Tier.unconfirmed.count} unconfirmed, #{Tier.where(verified_on: nil).count} with the quote gone."
+    puts "Waiting for a person:"
+    ClauseEvent.pending.includes(document: :vendor).chronological.each { |e| puts "  #{e.occurred_on} #{e.document.ota_path}: #{e.panel_reason || 'panel has not run'}" }
+  end
+
+  desc "Check each configured reader's key and model id against the provider"
+  task panel_check: :environment do
+    TrainedOn::Readers.all.each do |reader|
+      unless reader.configured?
+        puts "#{reader.provider}: no key (#{reader.class::KEY_ENV})"
+        next
+      end
+      begin
+        models = reader.available_models
+        found = models.include?(reader.model)
+        puts "#{reader.provider}: key ok; model #{reader.model} #{found ? 'found' : 'NOT FOUND'} (set #{reader.class::MODEL_ENV}). Newest listed: #{models.sort.last(6).join(', ')}"
+      rescue TrainedOn::Readers::Error => e
+        puts "#{reader.provider}: #{e.message}"
+      end
+    end
   end
 end
 
@@ -62,5 +92,6 @@ namespace :trained_on do
   desc "Fresh database to reviewed state: seed, rebuild history, load suggestions, replay decisions"
   task bootstrap: :environment do
     %w[db:seed trained_on:backfill trained_on:apply_reviews trained_on:apply_decisions].each { |t| Rake::Task[t].invoke }
+    Tier.refresh_verification!
   end
 end

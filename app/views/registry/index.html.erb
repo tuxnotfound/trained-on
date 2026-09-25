@@ -28,7 +28,7 @@
           </td>
           <td data-label="On record since">
             <%= in_force_since(tier) %>
-            <span class="plan small <%= "stale" if tier.stale? %>">checked <%= tier.verified_on ? date_tag(tier.verified_on) : "not yet" %></span>
+            <span class="plan small <%= "stale" if tier.stale? %>">in the capture of <%= date_tag(tier.verified_on) %></span>
           </td>
         </tr>
       <% end %>
