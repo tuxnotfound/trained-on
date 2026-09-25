@@ -1,0 +1,54 @@
+# Kamal deploy for Trained On. NOT DEPLOYED YET: set the three environment
+# variables below, provision one small server (the build plan says a Hetzner
+# CX22, ~EUR 4-5/month), then `bin/kamal setup`. See README "Deploy".
+#
+#   TRAINED_ON_SERVER_IP   the server's public IP
+#   TRAINED_ON_HOST        the public hostname, e.g. trainedon.example
+#   TRAINED_ON_REGISTRY    image name on a registry you can push to, e.g. ghcr.io/<user>/trained-on
+service: trained-on
+image: <%= ENV.fetch("TRAINED_ON_REGISTRY", "trained-on") %>
+
+servers:
+  web:
+    - <%= ENV.fetch("TRAINED_ON_SERVER_IP", "192.0.2.1") %>
+
+proxy:
+  ssl: true
+  host: <%= ENV.fetch("TRAINED_ON_HOST", "trained-on.example") %>
+
+registry:
+  server: ghcr.io
+  username: <%= ENV.fetch("KAMAL_REGISTRY_USERNAME", "set-KAMAL_REGISTRY_USERNAME") %>
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+    - TRAINED_ON_ADMIN_PASSWORD
+    - SMTP_PASSWORD
+    - ANTHROPIC_API_KEY
+  clear:
+    # Run Solid Queue (and so the nightly refresh) inside Puma: one process, one box.
+    SOLID_QUEUE_IN_PUMA: true
+    APP_HOST: "<%= ENV.fetch("TRAINED_ON_HOST", "trained-on.example") %>"
+    TRAINED_ON_ADMIN_USER: "<%= ENV.fetch("TRAINED_ON_ADMIN_USER", "reviewer") %>"
+    TRAINED_ON_REVIEWER: "<%= ENV.fetch("TRAINED_ON_REVIEWER", "") %>"
+    TRAINED_ON_MAIL_FROM: "<%= ENV.fetch("TRAINED_ON_MAIL_FROM", "") %>"
+    SMTP_ADDRESS: "<%= ENV.fetch("SMTP_ADDRESS", "") %>"
+    SMTP_USERNAME: "<%= ENV.fetch("SMTP_USERNAME", "") %>"
+
+# SQLite databases, backups and the OTA corpus clone all live here.
+volumes:
+  - "trained_on_storage:/rails/storage"
+
+asset_path: /rails/public/assets
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  logs: app logs -f
+  refresh: app exec "bin/rails runner NightlyRefreshJob.perform_now"
+  backup: app exec "bin/rails trained_on:backup"
+
+builder:
+  arch: amd64

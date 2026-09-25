@@ -1,0 +1,29 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 4,
+      "fingerprint": "a67d8c92a04184c3b24f14fc94c14595ffe2aa47a6e89d8278f94df61603711a",
+      "check_name": "LinkToHref",
+      "message": "Potentially unsafe model attribute in `link_to` href",
+      "file": "app/views/admin/documents/show.html.erb",
+      "line": 4,
+      "code": "link_to(\"history\", Document.includes(:anchors, :clause_versions, :vendor).find(params[:id]).ota_history_url)",
+      "confidence": "Weak",
+      "note": "ota_history_url is a fixed https://github.com/OpenTermsArchive/... prefix plus an URL-encoded OTA path; it cannot produce a javascript: URL."
+    },
+    {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 4,
+      "fingerprint": "fb48db5a3db5de41fb24b4bad7095fbe98b8c00b29c13ef575a3e6839f71a128",
+      "check_name": "LinkToHref",
+      "message": "Potentially unsafe model attribute in `link_to` href",
+      "file": "app/views/vendors/show.html.erb",
+      "line": 32,
+      "code": "link_to(\"Source history on GitHub\", (Unresolved Model).new.ota_history_url)",
+      "confidence": "Weak",
+      "note": "ota_history_url is a fixed https://github.com/OpenTermsArchive/... prefix plus an URL-encoded OTA path; it cannot produce a javascript: URL."
+    }
+  ],
+  "brakeman_version": "7"
+}

@@ -1,0 +1,13 @@
+<% page_title "Data" %>
+<div class="prose">
+<h1>Data</h1>
+<p class="lede">The registry and the change record as files, for anyone who wants to cite, chart or build on them.</p>
+<ul>
+  <li><%= link_to "registry.csv", registry_csv_path %>: one row per vendor plan, with answer, quote, document, dates and source link.</li>
+  <li><%= link_to "changes.csv", changes_csv_path %>: every published change, with classification, summary and the Open Terms Archive capture.</li>
+  <li><%= link_to "/api/v1/vendors", api_v1_vendors_path %> and <%= link_to "/api/v1/changes", api_v1_changes_path %>: the same as JSON.</li>
+  <li><%= link_to "changes.atom", changes_feed_path %>: a feed of published changes. Each vendor page has its own feed too.</li>
+</ul>
+<p>Licence: <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-By 1.0</a>. Attribute "Trained On, derived from Open Terms Archive contributors".</p>
+<p>Only published changes and verified rows appear in these files. Nothing is included before a person has reviewed it.</p>
+</div>

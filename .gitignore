@@ -1,3 +1,20 @@
 # The Open Terms Archive corpus is cloned here, never committed. See README.
 corpus/
 .DS_Store
+
+# Rails
+/.bundle
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
+/public/assets
+/config/master.key
+/config/credentials/*.key
+.env

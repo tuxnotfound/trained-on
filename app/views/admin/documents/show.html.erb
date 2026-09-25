@@ -1,0 +1,28 @@
+<% page_title "Anchors: #{@document.ota_path}" %>
+<p><%= link_to "Back to queue", admin_root_path %></p>
+<h1><%= @document.vendor.name %>, <%= @document.name %></h1>
+<p class="small muted"><%= @document.ota_path %> · <%= pluralize(@document.versions_walked.to_i, "version") %> walked<%= ", last rebuilt #{l(@document.walked_at.to_date, format: :long)}" if @document.walked_at %> · <%= link_to "history", @document.ota_history_url %></p>
+
+<h2>Anchors</h2>
+<ul>
+  <% @document.anchors.each do |anchor| %>
+    <li>“<%= anchor.phrase %>” <%= button_to "remove", admin_document_anchor_path(@document, anchor), method: :delete, class: "btn btn--small", form: { style: "display:inline" } %></li>
+  <% end %>
+</ul>
+<%= form_with url: admin_document_anchors_path(@document), scope: :anchor, class: "review" do |f| %>
+  <div><%= f.label :phrase, "New anchor phrase" %><%= f.text_field :phrase %></div>
+  <div class="buttons"><%= f.submit "Add anchor", class: "btn" %></div>
+<% end %>
+<p><%= button_to "Rebuild history with these anchors", rebuild_admin_document_path(@document), class: "btn btn--primary" %></p>
+<p class="small muted">Anchors edited here are live immediately. Copy them into db/seeds/anchors.yml so a fresh database gets them too.</p>
+
+<% hits = @document.current_version&.unanchored_hits.to_a %>
+<% if hits.any? %>
+  <h2>Training language no anchor covers (latest capture)</h2>
+  <% hits.each do |hit| %><p class="hit"><%= hit %></p><% end %>
+<% end %>
+
+<h2>Current clause</h2>
+<% if (version = @document.last_located_version) %>
+  <div class="clause"><%= clause_paragraphs(version.text) %></div>
+<% end %>

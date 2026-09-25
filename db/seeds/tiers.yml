@@ -1,0 +1,130 @@
+# The registry: one row per vendor plan. Every quote must be verbatim from the
+# latest located version of the named document (the Tier model enforces it).
+# Rows are drafts until a human sets verified_on in the admin.
+
+- vendor: chatgpt
+  name: Free, Plus and Pro
+  document: ChatGPT/Privacy Policy.md
+  answer: trains_opt_out
+  quote: When you use our services for individuals such as ChatGPT, Sora, or Operator, we may use your content to train our models.
+  opt_out: Data Controls in settings, or "do not train on my content" in OpenAI's privacy portal. Temporary Chats are not used for training.
+  position: 0
+- vendor: chatgpt
+  name: Business, Enterprise, Edu and API
+  document: ChatGPT/Business Privacy Policy.md
+  answer: no_training_default
+  quote: By default, we do not use your business data for training our models.
+  opt_out: Opt-in only, for example through feedback mechanisms.
+  position: 1
+
+- vendor: claude-ai
+  name: Free, Pro and Max
+  document: Claude.ai/Privacy Policy.md
+  answer: trains_opt_out
+  quote: We may use your Inputs and Outputs to train and improve Anthropic AI models, unless you opt out through your account settings.
+  opt_out: Account settings. Conversations flagged for safety review and material you report as feedback are used even after opting out.
+  position: 0
+- vendor: claude-ai
+  name: Commercial (Team, Enterprise, API)
+  document: Claude.ai/Commercial Terms.md
+  answer: no_training
+  quote: Anthropic may not train models on Customer Content from Services.
+  position: 1
+
+- vendor: microsoft-copilot
+  name: Consumer Copilot
+  document: Microsoft Copilot/Privacy Policy.md
+  answer: trains_opt_out
+  quote: In certain markets, we use conversation data to train the generative AI models in Copilot, unless you choose to opt-out of such training.
+  opt_out: Copilot settings. Stated for "certain markets" only.
+  position: 0
+
+- vendor: github-copilot
+  name: Accounts under GitHub's Terms of Service
+  document: GitHub Copilot/Terms of Service.md
+  answer: trains_opt_out
+  quote: If you provide your private repository content as Input to AI Features, we may use that Input to provide, develop, train, and improve the Service, including AI Features.
+  opt_out: Section J.3 of GitHub's Terms. Unless you opt out, GitHub's affiliates may also use your Inputs and Outputs.
+  position: 0
+
+- vendor: perplexity
+  name: API
+  document: Perplexity/Developer Terms.md
+  answer: no_training
+  quote: Perplexity shall not use (or authorize third parties to use) Customer Content to train, retrain, fine-tune or otherwise improve any generative artificial intelligence models.
+  position: 0
+- vendor: perplexity
+  name: Enterprise (data processing agreement)
+  document: Perplexity/Data Processor Agreement.md
+  answer: no_training
+  quote: For the avoidance of doubt, Personal Data will not be used for training of Perplexity's large language models.
+  position: 1
+
+- vendor: grok
+  name: Consumer (grok.com, X and apps)
+  document: Grok/Terms of Service.md
+  answer: trains_opt_out
+  quote: When logged into our Service, you can select whether or not you want us to use your User Content to improve our products and services and train our models.
+  opt_out: A setting when logged in. Logged-out use grants xAI "full rights" to use your data for model training.
+  position: 0
+- vendor: grok
+  name: xAI API and enterprise
+  document: Grok/Commercial Terms.md
+  answer: no_training
+  quote: For clarity, xAI shall not use any User Content to train any foundation models, large language models, or other artificial intelligence systems.
+  opt_out: De-identified data derived from your use may still be used "for any lawful purpose".
+  position: 1
+
+- vendor: cursor
+  name: All plans
+  document: Cursor/Terms of Service.md
+  answer: no_training_default
+  quote: ANYSPHERE WILL NOT USE CONTENT TO TRAIN, OR ALLOW ANY THIRD PARTY TO TRAIN, ANY AI MODELS, UNLESS YOU'VE EXPLICITLY AGREED TO THE USE OF CONTENT FOR TRAINING.
+  opt_out: Training needs your explicit agreement. Preferences are managed in the app.
+  position: 0
+
+- vendor: windsurf
+  name: Free
+  document: Codeium/Terms of Service.md
+  answer: trains_no_opt_out
+  quote: "Cognition may use Customer Data for model training purposes and to improve and enhance the Services."
+  opt_out: None on the free tier. The opt-out is for paid tiers only.
+  position: 0
+- vendor: windsurf
+  name: Paid (Pro, Teams)
+  document: Codeium/Terms of Service.md
+  answer: trains_opt_out
+  quote: If you subscribe to a paid Service Tier, you may opt out of this use ("Opt-Out").
+  opt_out: On Teams, only an administrator may opt out.
+  position: 1
+
+- vendor: deepseek
+  name: Consumer app and platform
+  document: DeepSeek/Privacy Policy.md
+  answer: trains_opt_out
+  quote: To improve and develop the Services and to train and improve our technology, such as our machine learning models and algorithms.
+  opt_out: 'Listed among privacy rights: "the right to opt-out of using your Personal Data for training our models or optimizing our technologies."'
+  position: 0
+
+- vendor: jasper
+  name: All plans
+  document: Jasper/Terms of Service.md
+  answer: trains_regional_opt_out
+  quote: For users located in the European Union or United Kingdom, you may have the right to object to the use of your Customer Property for the purpose of improving artificial intelligence models.
+  opt_out: EU and UK users only, by request to legal@jasper.ai. The licence covers "modifying, improving, and enhancing artificial intelligence models".
+  position: 0
+
+- vendor: le-chat
+  name: Free, Pro and Student
+  document: Le Chat/Terms of Service.md
+  answer: trains_opt_out
+  quote: We do not use Your Data to train our artificial intelligence models except (a) when you use the Mistral AI Products under a free subscription, Le Chat Pro or Le Chat Student and you have not opted-out of training
+  opt_out: Account settings. Feedback and moderated content are used regardless.
+  position: 0
+- vendor: le-chat
+  name: Team and Enterprise
+  document: Le Chat/Terms of Service.md
+  answer: no_training_default
+  quote: We do not use Your Data to train our artificial intelligence models except
+  opt_out: Exceptions are feedback you give and content flagged by moderation.
+  position: 1

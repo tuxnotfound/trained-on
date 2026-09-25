@@ -1,0 +1,5 @@
+en:
+  date:
+    formats:
+      long: "%-d %b %Y"
+      short: "%-d %b"

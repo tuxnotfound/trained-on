@@ -1,0 +1,52 @@
+<% page_title "#{@event.occurred_on.iso8601}: #{@vendor.name} #{@event.document.name}" %>
+<% content_for :description, @event.one_line %>
+
+<article>
+  <header class="event-head">
+    <p><%= classification_badge(@event) %><%= draft_marker(@event) %></p>
+    <h1><%= @vendor.name %> changed its <%= @event.document.name.downcase %></h1>
+    <p class="headline"><%= @event.one_line %></p>
+  </header>
+
+  <dl class="facts">
+    <dt>When</dt>
+    <dd>Recorded <%= change_window(@event) %><% if @event.gap? %> <span class="muted">(no capture in between)</span><% end %></dd>
+    <dt>Document</dt><dd><%= link_to @event.document.name, @event.document.ota_history_url %></dd>
+    <dt>Evidence</dt>
+    <dd>
+      <%= link_to "Capture with the new text", @event.to_version.ota_commit_url %>
+      <% if @event.from_version %> · <%= link_to "last capture with the old text", @event.from_version.ota_commit_url %><% end %>
+    </dd>
+    <dt>Vendor</dt><dd><%= link_to "All #{@vendor.name} plans and changes", vendor_path(@vendor) %></dd>
+  </dl>
+
+  <% if @event.suspected_extraction %>
+    <p class="note">Open Terms Archive changed how it captures this document around the same date. The reviewer checked that the wording itself changed.</p>
+  <% end %>
+
+  <h2>What changed</h2>
+  <%= render_diff(@diff) %>
+  <p class="legend"><del>Removed</del> <ins>Added</ins>. Only the sentences of the training clause are shown, not the whole document.</p>
+
+  <div class="two-up">
+    <section>
+      <h2>Before</h2>
+      <% if @event.from_version %>
+        <p class="small muted">In force from <%= date_tag(@event.from_version.effective_at) %></p>
+        <div class="clause"><%= clause_paragraphs(@event.from_version.text) %></div>
+      <% else %>
+        <p class="muted">No training clause was found in earlier captures of this document.</p>
+      <% end %>
+    </section>
+    <section>
+      <h2>After</h2>
+      <p class="small muted">In force from <%= date_tag(@event.to_version.effective_at) %></p>
+      <div class="clause"><%= clause_paragraphs(@event.to_version.text) %></div>
+    </section>
+  </div>
+
+  <% if @related.any? %>
+    <h2>Other <%= @vendor.name %> changes</h2>
+    <ul class="changes"><%= render partial: "shared/change_item", collection: @related, as: :event %></ul>
+  <% end %>
+</article>

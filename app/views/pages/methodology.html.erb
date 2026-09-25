@@ -1,0 +1,59 @@
+<% page_title "Methodology" %>
+<div class="prose">
+<h1>How this record is made</h1>
+<p class="lede">Open Terms Archive saves a copy of AI vendors' terms every time the page changes. Most of those changes are noise. This site keeps only the ones where the training clause itself changed, and a person confirms each one.</p>
+
+<div class="stats">
+  <div class="stat"><b><%= number_with_delimiter(@walked) %></b><span>document versions recorded by Open Terms Archive</span></div>
+  <div class="stat"><b><%= number_with_delimiter(@phantoms) %></b><span>identical to the previous version once normalised</span></div>
+  <div class="stat"><b><%= @states %></b><span>distinct states of the training clause</span></div>
+  <div class="stat"><b><%= @candidates %></b><span>candidate changes sent to review</span></div>
+  <div class="stat"><b><%= @published %></b><span>published after review</span></div>
+</div>
+
+<h2>Why most recorded changes are not changes</h2>
+<p>On 24 September 2026 Open Terms Archive recorded a new version of ChatGPT's privacy policy. This is the entire difference:</p>
+<pre>[Free⁠](https://chatgpt.com/plans/free/?openaicom-did=<del>0e733353-b1b0-467b-94de-262521eef020</del><ins>3a4fe887-51ca-4d69-94b5-8c95a7d81d1e</ins>&amp;openaicom_referred=true)</pre>
+<p>A tracking ID inside one link rotated. The link also carries an invisible word-joiner character after "Free". Nothing a reader would see changed. OpenAI's pages do this several times a day, and a monitor that alerts on every recorded change reports that OpenAI rewrote its privacy policy several times a day.</p>
+
+<h2>The pipeline</h2>
+<ol>
+  <li><strong>Normalise.</strong> Each recorded version is converted to plain comparable text. Link targets are dropped and link text kept. Invisible characters are stripped, including the word joiner (U+2060), zero-width spaces and soft hyphens. Unicode is normalised to NFC, typographic quotes become plain quotes, whitespace is collapsed, and screen-reader labels such as "(opens in a new window)" are removed.</li>
+  <li><strong>Segment.</strong> Each document is split into paragraphs, and paragraphs are split again at bullet points and table cells. Vendors put training language inside large purpose tables, and an edit elsewhere in the table must not look like a change to the clause.</li>
+  <li><strong>Locate by anchor.</strong> For every tracked document a person chose short, stable phrases that identify the sentences of the training clause, such as "use your inputs and outputs to train". A segment belongs to the clause when it contains one of them. The anchors are listed below, so anyone can check what is and is not tracked.</li>
+  <li><strong>Hash and collapse.</strong> The located clause is hashed. Consecutive versions with the same hash collapse into one clause state, however many times the rest of the document changed.</li>
+  <li><strong>Emit candidates.</strong> Each change of state becomes a candidate event. If no anchor matches at all, that is also an event, never silence: the vendor may have moved the clause, or Open Terms Archive's capture may have broken. Events that coincide with Open Terms Archive changing its own capture rules are flagged.</li>
+  <li><strong>Review.</strong> A person reads every candidate. It is classified as a change of position, a scope change, a new disclosure, wording only, or not a real change. Only the first three are published, each with a one-line summary. A language model may offer a first opinion, but it never decides and never locates the clause.</li>
+</ol>
+
+<h2>What the dates mean</h2>
+<p>A date on this site is the date Open Terms Archive first recorded the new text, not the date the vendor decided the change. When Open Terms Archive went a while without capturing a document, the change page gives the window between the last capture of the old text and the first capture of the new.</p>
+
+<h2>Known gaps</h2>
+<ul>
+  <li><strong>Google Gemini.</strong> Open Terms Archive tracks Google's general terms and generative AI addendum. The statement about training on your conversations lives in the Gemini Apps privacy notice, which is not tracked, so Gemini has no row here.</li>
+  <li><strong>Midjourney.</strong> Its tracked documents barely mention training on user material.</li>
+  <li><strong>Microsoft Copilot.</strong> Since December 2025 Open Terms Archive's capture of the Microsoft Privacy Statement contains only the page header. The registry quotes the last complete capture and says so.</li>
+  <li><strong>Only what the documents say.</strong> Help-centre articles, settings screens and blog posts are not contracts and are not tracked.</li>
+</ul>
+
+<h2>Tracked documents and anchors</h2>
+<div class="scroll-x">
+<table class="plain">
+  <thead><tr><th>Document</th><th class="num">Versions</th><th class="num">Clause states</th><th>Anchors</th></tr></thead>
+  <tbody>
+    <% @documents.each do |d| %>
+      <tr>
+        <td><%= d.vendor.name %>, <%= d.name %></td>
+        <td class="num"><%= number_with_delimiter(d.versions_walked.to_i) %></td>
+        <td class="num"><%= d.clause_versions.size %></td>
+        <td class="small"><%= d.anchors.map { |a| "“#{a.phrase}”" }.join(", ") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>
+
+<h2>Source and licence</h2>
+<p>The underlying document history is Open Terms Archive's <a href="https://github.com/OpenTermsArchive/genai-contrib-versions">genai-contrib-versions</a>, by Open Terms Archive contributors, under ODC-By 1.0. Everything published here is under the same licence. The <%= link_to "data page", data_path %> has the files.</p>
+</div>

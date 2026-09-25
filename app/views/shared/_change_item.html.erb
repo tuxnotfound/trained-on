@@ -1,0 +1,7 @@
+<li>
+  <span class="when"><%= date_tag(event.occurred_on) %></span>
+  <span class="what">
+    <%= link_to event.headline, change_path(event) %><%= draft_marker(event) %>
+    <span class="who"><%= classification_badge(event) %> · <%= event.vendor.name %>, <%= event.document.name %></span>
+  </span>
+</li>

@@ -1,0 +1,15 @@
+<% page_title "Changes" %>
+<h1>Changes to AI training clauses</h1>
+<p class="lede">Every change a person has reviewed and confirmed, newest first. Changes of wording, link updates and capture glitches are left out on purpose.</p>
+<nav class="filters" aria-label="Filter">
+  <%= link_to "All", changes_path %>
+  <% ClauseEvent::PUBLIC_CLASSIFICATIONS.each do |c| %>
+    <%= link_to ApplicationHelper::CLASSIFICATION_LABEL[c], changes_path(type: c) %>
+  <% end %>
+  <%= link_to "Atom feed", changes_feed_path %>
+</nav>
+<% if @events.any? %>
+  <ul class="changes"><%= render partial: "shared/change_item", collection: @events, as: :event %></ul>
+<% else %>
+  <p class="muted">Nothing published yet.</p>
+<% end %>

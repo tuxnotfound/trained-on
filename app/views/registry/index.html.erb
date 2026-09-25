@@ -1,0 +1,50 @@
+<% page_title nil %>
+<h1>Does this AI tool train on your inputs?</h1>
+<p class="lede">The answer for each plan, quoting the contract clause that says so, dated. Below the table, every time a vendor actually changed that clause. Thousands of recorded document versions reduce to a few dozen real changes.</p>
+
+<% if @last_capture && @last_capture < 3.days.ago %>
+  <p class="banner banner--warn">The newest document capture processed here is from <%= date_tag(@last_capture) %>. This record may be behind the vendors' current terms.</p>
+<% end %>
+
+<div class="scroll-x">
+<table class="registry">
+  <thead>
+    <tr><th scope="col">Tool and plan</th><th scope="col">Answer</th><th scope="col">What the terms say</th><th scope="col">On record since</th></tr>
+  </thead>
+  <tbody>
+    <% @vendors.each do |vendor| %>
+      <% (@tiers[vendor.id] || []).each do |tier| %>
+        <tr>
+          <td class="vendor-cell">
+            <%= link_to vendor.name, vendor_path(vendor) %>
+            <span class="plan"><%= tier.name %><%= draft_marker(tier) %></span>
+          </td>
+          <td data-label="Answer">
+            <%= answer_badge(tier) %>
+            <% if tier.opt_out.present? %><span class="opt-out"><%= tier.opt_out %></span><% end %>
+          </td>
+          <td class="quote-cell">
+            <blockquote class="quote"><span class="q"><%= tier.quote %></span><cite><%= tier.document&.name %><% if tier.document&.capture_broken? %> · last good capture <%= date_tag(tier.document.last_located_version.last_seen_at) %><% end %></cite></blockquote>
+          </td>
+          <td data-label="On record since">
+            <%= in_force_since(tier) %>
+            <span class="plan small <%= "stale" if tier.stale? %>">checked <%= tier.verified_on ? date_tag(tier.verified_on) : "not yet" %></span>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+</div>
+
+<% if @vendors.empty? %>
+  <p class="banner">Nothing is published yet. Every row and every change is reviewed by a person before it appears here.</p>
+<% end %>
+
+<h2>Latest changes</h2>
+<% if @recent.any? %>
+  <ul class="changes"><%= render partial: "shared/change_item", collection: @recent, as: :event %></ul>
+  <p><%= link_to "All changes", changes_path %> · <%= link_to "Atom feed", changes_feed_path %></p>
+<% else %>
+  <p class="muted">No published changes yet.</p>
+<% end %>

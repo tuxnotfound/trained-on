@@ -1,0 +1,50 @@
+<% page_title "Review queue" %>
+<h1>Review queue</h1>
+<p class="lede">Nothing reaches the public pages until it is published here. Suggested verdicts are pre-filled. Read the diff, correct them if needed, then publish or reject.</p>
+<p>
+  <% ClauseEvent::STATES.each do |state| %>
+    <%= link_to "#{state.capitalize} (#{@counts[state].to_i})", admin_events_path(state:), style: ("font-weight:600" if state == @state) %> ·
+  <% end %>
+  <%= button_to (preview? ? "Leave preview" : "Preview the public site with drafts"), admin_preview_path, class: "btn btn--small", form: { style: "display:inline" } %>
+</p>
+
+<div class="scroll-x">
+<table class="plain queue">
+  <thead><tr><th>Recorded</th><th>Document</th><th>Suggested</th><th>Summary</th><th></th></tr></thead>
+  <tbody>
+    <%= render partial: "admin/events/row", collection: @events, as: :event %>
+  </tbody>
+</table>
+</div>
+
+<% if @unanchored.any? %>
+  <h2>Training language no anchor covers</h2>
+  <p class="small">The fallback net matched these segments in the latest capture. Either anchor them or ignore them.</p>
+  <ul>
+    <% @unanchored.each do |d| %>
+      <li><%= link_to "#{d.vendor.name}, #{d.name}", admin_document_path(d) %>: <%= pluralize(d.current_version.unanchored_hits.size, "segment") %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<h2 id="registry">Registry rows</h2>
+<p class="small">Check each quote against the vendor's live page before marking it verified. A row not re-verified in 30 days shows as stale.</p>
+<div class="scroll-x">
+<table class="plain">
+  <thead><tr><th>Vendor and plan</th><th>Answer</th><th>Quote in clause?</th><th>Verified</th><th></th></tr></thead>
+  <tbody>
+    <% @tiers.each do |tier| %>
+      <tr>
+        <td><%= tier.vendor.name %>, <%= tier.name %></td>
+        <td><%= answer_badge(tier) %></td>
+        <td><%= tier.quote_in_clause? ? "yes" : tag.strong("NO", class: "errors") %></td>
+        <td><%= tier.verified_on ? date_tag(tier.verified_on) : "draft" %></td>
+        <td>
+          <%= button_to "Verified today", admin_tier_path(tier), method: :patch, class: "btn btn--small" %>
+          <% if tier.verified_on %><%= button_to "Back to draft", admin_tier_path(tier, unverify: 1), method: :patch, class: "btn btn--small" %><% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>

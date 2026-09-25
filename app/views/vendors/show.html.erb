@@ -1,0 +1,52 @@
+<% page_title @vendor.name %>
+<% content_for :description, "Does #{@vendor.name} train on your inputs? The clause quoted per plan, and every dated change to it." %>
+<% content_for :head, auto_discovery_link_tag(:atom, vendor_feed_url(@vendor.slug), title: "Trained On: #{@vendor.name}") %>
+
+<h1>Does <%= @vendor.name %> train on your inputs?</h1>
+<% if @vendor.summary.present? %><p class="lede"><%= @vendor.summary %></p><% end %>
+
+<div class="tiers">
+  <% @tiers.each do |tier| %>
+    <section class="tier">
+      <h3><%= tier.name %><%= draft_marker(tier) %></h3>
+      <%= answer_badge(tier) %>
+      <blockquote class="quote"><span class="q"><%= tier.quote %></span><cite><%= tier.document&.name %></cite></blockquote>
+      <% if tier.opt_out.present? %><p class="small"><%= tier.opt_out %></p><% end %>
+      <p class="meta">On record since <%= in_force_since(tier, inline: true) %> · checked <%= tier.verified_on ? date_tag(tier.verified_on) : "not yet" %><% if tier.stale? && tier.verified_on %> · <span class="stale">over 30 days ago</span><% end %></p>
+    </section>
+  <% end %>
+</div>
+
+<h2>Changes</h2>
+<% if @events.any? %>
+  <ul class="changes"><%= render partial: "shared/change_item", collection: @events, as: :event %></ul>
+<% else %>
+  <p class="muted">No change to the training clause is recorded for <%= @vendor.name %> in the period Open Terms Archive has tracked.</p>
+<% end %>
+<p class="small"><%= link_to "Atom feed for #{@vendor.name}", vendor_feed_path(@vendor.slug) %></p>
+
+<h2>Full clause history</h2>
+<p class="small muted">Every distinct state of the clause in each tracked document, oldest first, with the words that changed from the previous state.</p>
+<% @documents.each do |document| %>
+  <h3><%= document.name %></h3>
+  <p class="small muted"><%= pluralize(document.versions_walked.to_i, "recorded version") %> reduce to <%= pluralize(document.clause_versions.size, "clause state") %>. <%= link_to "Source history on GitHub", document.ota_history_url %>.</p>
+  <% previous = nil %>
+  <% document.clause_versions.each do |version| %>
+    <details class="version">
+      <summary>
+        From <%= date_tag(version.effective_at) %>
+        <span class="muted">· <%= pluralize(version.versions_count, "capture") %><% if version.versions_count > 1 %>, last <%= date_tag(version.last_seen_at) %><% end %><% if version == document.current_version %> · current<% end %></span>
+        <% if version.anchor_lost %><span class="lost">· clause not found in capture</span><% end %>
+      </summary>
+      <% if version.anchor_lost %>
+        <p class="note">None of the tracked sentences appear in these captures. Either the vendor moved or removed the clause, or Open Terms Archive's capture of the page changed. See the change list above for the reviewed explanation.</p>
+      <% elsif previous %>
+        <%= render_diff(TrainedOn::WordDiff.new(previous.text, version.text)) %>
+      <% else %>
+        <div class="clause"><%= clause_paragraphs(version.text) %></div>
+      <% end %>
+      <p class="small"><%= link_to "Capture in Open Terms Archive", version.ota_commit_url %></p>
+    </details>
+    <% previous = version unless version.anchor_lost %>
+  <% end %>
+<% end %>

@@ -1,0 +1,11 @@
+<%= @events.size %> new event(s) are waiting in the review queue. Nothing has been published.
+
+<% @events.each do |event| -%>
+- <%= event.occurred_on %>  <%= event.vendor.name %> / <%= event.document.name %>  [<%= event.kind %><%= ", OTA extraction change" if event.suspected_extraction %>]
+  <%= event.llm_verdict ? "Haiku: #{event.llm_verdict['classification']}: #{event.llm_verdict['one_line']}" : "No automatic opinion." %>
+  <%= admin_event_url(event.id) %>
+<% end -%>
+<% if @unanchored.any? -%>
+
+The net sees training language no anchor covers in: <%= @unanchored.map(&:ota_path).join(", ") %>.
+<% end -%>

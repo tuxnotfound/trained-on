@@ -1,0 +1,7 @@
+<tr id="<%= dom_id(event) %>">
+  <td><%= date_tag(event.occurred_on, format: :iso) %></td>
+  <td><%= event.vendor.name %>, <%= event.document.name %><% if event.kind != "change" %> <strong class="lost">[<%= event.kind %>]</strong><% end %><% if event.suspected_extraction %> <span class="lost" title="Coincides with an OTA extraction change">[OTA capture changed]</span><% end %></td>
+  <td><%= classification_badge(event) %></td>
+  <td><%= event.one_line %></td>
+  <td><%= link_to (event.state == "pending" ? "Review" : event.state), admin_event_path(event.id) %></td>
+</tr>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Trained On: which AI tools train on your inputs" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="<%= content_for(:description) || "A dated record of which AI tools train on your inputs, with the contract clause quoted and every real change diffed." %>">
+    <meta name="color-scheme" content="light dark">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= auto_discovery_link_tag :atom, changes_feed_url, title: "Trained On: all changes" %>
+    <%= yield :head %>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body>
+    <% if preview? %>
+      <div class="admin-bar"><div class="wrap">
+        <strong>Preview</strong> Drafts are visible and marked. The public sees published events and verified rows only.
+        <%= link_to "Review queue", admin_root_path %>
+        <%= button_to "Leave preview", admin_preview_path, form: { style: "display:inline" } %>
+      </div></div>
+    <% end %>
+    <header class="site-head">
+      <div class="wrap">
+        <a class="brand" href="<%= root_path %>">Trained On<small>does this AI tool train on your inputs?</small></a>
+        <nav class="site-nav" aria-label="Main">
+          <%= link_to "Registry", root_path, "aria-current": (current_page?(root_path) ? "page" : nil) %>
+          <%= link_to "Changes", changes_path, "aria-current": (current_page?(changes_path) ? "page" : nil) %>
+          <%= link_to "Methodology", methodology_path, "aria-current": (current_page?(methodology_path) ? "page" : nil) %>
+          <%= link_to "Data", data_path, "aria-current": (current_page?(data_path) ? "page" : nil) %>
+        </nav>
+      </div>
+    </header>
+    <main class="wrap">
+      <% flash.each do |type, message| %>
+        <div class="flash <%= "flash--alert" if type.to_s == "alert" %>"><%= message %></div>
+      <% end %>
+      <%= yield %>
+    </main>
+    <footer class="site-foot">
+      <div class="wrap">
+        <p>Clause history comes from <a href="https://opentermsarchive.org">Open Terms Archive</a>'s <a href="https://github.com/OpenTermsArchive/genai-contrib-versions">genai-contrib collection</a>, by Open Terms Archive contributors, under <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-By 1.0</a>. This site's data is published under the same licence.</p>
+        <p>This is a record of what contracts say, with dates and links. It is not legal advice and not an assessment of any vendor.</p>
+      </div>
+    </footer>
+  </body>
+</html>

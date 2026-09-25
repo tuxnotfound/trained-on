@@ -1,51 +1,110 @@
 # Trained On
 
-A public, dated record of which AI tools train on your inputs, with the actual
-contract clause quoted and diffed over time. Not a registry: a change-event
-record. The corpus is Open Terms Archive's `genai-contrib` collection
-(ODC-By 1.0, attribution to Open Terms Archive contributors); the product is the
-denoising on top of it.
+A public, dated record of which AI tools train on your inputs. Each registry row quotes
+the contract clause that says so. Every real change to that clause is diffed on a page of
+its own. The corpus is Open Terms Archive's `genai-contrib` collection (ODC-By 1.0, by
+Open Terms Archive contributors). The product is the denoising on top of it.
 
 The plan, the reasoning and the pass conditions live in the control tower at
 `control-tower/projects/trained-on/STATUS.md`. This repo holds the code.
 
-## State
+## How it works
 
-Nothing built yet. The first action is not the 16-hour Rails build. It is the
-go/no-go test in `scripts/denoise.rb`: does the corpus contain enough real,
-dated clause changes to be worth a product at all?
+1,098 recorded versions of the 23 tracked documents reduce to 64 clause states and 41
+candidate events. 883 of those versions are identical to the previous one once normalised.
+The pipeline, in `app/services/trained_on/`:
 
-| Gate | Build needs | Drop below |
-|---|---:|---:|
-| Distinct clause states across 13 vendors | 20 | 10 |
-| Transitions where words actually changed | 6 | 3 |
-| Vendors where the locator finds the clause | 10 of 13 | misses more than 3 |
+1. **Normaliser**: link text kept and targets dropped, so rotating `openaicom-did` IDs
+   vanish. Word joiners and zero-width characters are stripped, text is NFC-normalised,
+   quotes are folded, "(opens in a new window)" is removed. Each document is split into
+   segments at paragraphs, bullets and table cells.
+2. **Locator**: finds the clause by hand-chosen **anchors**, stable phrases per document,
+   kept in `db/seeds/anchors.yml`. When no anchor matches, the result is `anchor_lost`,
+   never "no change". The old regex net (`Net`) only proposes unanchored training segments
+   for review.
+3. **Backfill**: walks every OTA version with `git log` and `git show`, then hashes and
+   collapses runs into `ClauseVersion`s. It emits a `ClauseEvent` per real transition and
+   flags events that coincide with an OTA "technical or declaration upgrade" commit. A
+   rebuild carries review decisions over.
+4. **Adjudicator**: Claude Haiku (`claude-haiku-4-5`) gives a first opinion on new events.
+   It uses structured output, only when `ANTHROPIC_API_KEY` is set, and never publishes.
+5. **Review**: `/admin` behind basic auth. Every event is published or rejected by a person.
+   Registry rows are drafts until marked verified. A row not verified in 30 days shows as
+   stale.
 
-Below the drop line, this project ends. 16 hours would buy a worse Shieldra.
+Public pages: `/` is the registry, `/vendors/:slug` a vendor's plans and full clause
+history, `/changes` and `/changes/:date-:vendor-:document` the change pages, `/methodology`
+and `/data`. Feeds and files: `/changes.atom`, `/vendors/:slug.atom`, `/api/v1/vendors`,
+`/api/v1/changes`, `/data/registry.csv`, `/data/changes.csv`. All data is under ODC-By 1.0.
 
-## Run the test
+## Run it locally
+
+Ruby 3.4.9 and git. The corpus is a gitignored clone:
 
 ```
-git clone https://github.com/OpenTermsArchive/genai-contrib-versions corpus/genai-contrib-versions
-ruby scripts/denoise.rb
+git clone --filter=blob:none https://github.com/OpenTermsArchive/genai-contrib-versions corpus/genai-contrib-versions
+bundle install
+bin/rails db:setup                 # schema + vendors, documents, anchors, registry rows
+bin/rails trained_on:backfill      # about 45 s: rebuild every document's clause history
+bin/rails trained_on:apply_reviews # suggested verdicts from db/seeds/reviews.yml, still pending
+TRAINED_ON_ADMIN_USER=me TRAINED_ON_ADMIN_PASSWORD=secret bin/dev
 ```
 
-Ruby 3.4 (see `.ruby-version`), stdlib only, no gems, no network after the
-clone. It writes `results/denoise-report.md` with the verdict table, a
-per-vendor summary, and every transition with the new clause text quoted, so
-the "meaning-bearing" call can be made by reading rather than trusting.
+Nothing is public until reviewed, so the registry starts empty. Open `/admin`, press
+**Preview the public site with drafts** to see everything marked as draft, then work
+through the queue. In development, `?preview=1` also works.
 
-## What the script does
+## Reviewing
 
-normalise (NFC, strip zero-width chars, replace links with their text so
-rotating tracking params vanish, collapse whitespace) → locate (paragraphs that
-mention training a model AND the user's material, minus known false positives)
-→ hash the located block → walk every git version of every document → collapse
-runs of identical hashes → classify each transition as reflow-only or
-word-change → report.
+- **Queue** (`/admin`): each candidate shows the word diff, the evidence commits, the OTA
+  extraction flag, Haiku's opinion when available, and the suggested verdict. Publish needs
+  a public classification (position, scope or disclosure) and a one-line summary.
+- **Registry rows**: check each quote against the vendor's live page, then press
+  **Verified today**. Quotes must be verbatim in the tracked clause, which the model enforces.
+- **Anchors** (`/admin/documents/:id`): add or remove phrases, then rebuild. Copy the
+  change into `db/seeds/anchors.yml` so a fresh database has it too. The same page lists
+  training language the net found that no anchor covers.
+
+## Nightly refresh
+
+`NightlyRefreshJob` runs at 04:00 through Solid Queue (`config/recurring.yml`). It pulls
+the corpus, cloning it on first run, and rebuilds every document. It asks Haiku about new
+events and emails `TRAINED_ON_REVIEWER`. It never publishes. Run it by hand with
+`bin/rails runner NightlyRefreshJob.perform_now`.
+
+## Tests
+
+```
+bin/rails test                 # includes real-corpus regressions (about 90 s)
+SKIP_CORPUS=1 bin/rails test   # without them
+bin/rubocop && bin/brakeman
+```
+
+The regressions run the committed anchors over the real corpus. They assert that the six
+locator artefacts from the human read stay gone, that Claude.ai's 2025-08-29 flip is still
+found, and that every registry quote is verbatim.
+
+## Deploy (not done yet)
+
+Kamal to one small server, per the build plan (a Hetzner CX22). SQLite, backups and the
+corpus clone live on the `trained_on_storage` volume. Solid Queue runs inside Puma.
+
+```
+export TRAINED_ON_SERVER_IP=... TRAINED_ON_HOST=... TRAINED_ON_REGISTRY=ghcr.io/<user>/trained-on
+export KAMAL_REGISTRY_USERNAME=... KAMAL_REGISTRY_PASSWORD=... TRAINED_ON_ADMIN_PASSWORD=...
+export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...  # optional: email digest
+export ANTHROPIC_API_KEY=...                                                          # optional: Haiku opinions
+bin/kamal setup
+bin/kamal refresh   # first backfill (clones the corpus)
+```
+
+Put Cloudflare in front for the launch spike. `bin/kamal backup` writes a SQLite copy to
+`storage/backups`. Shipping it off the box, to R2 for example, is not wired up yet.
 
 ## Layout
 
-- `scripts/denoise.rb`: the test.
-- `results/`: committed reports, one per run worth keeping.
-- `corpus/`: gitignored clone of the OTA versions repo.
+- `app/services/trained_on/`: normaliser, net, locator, corpus, backfill, extraction check, word diff, adjudicator.
+- `db/seeds/`: `anchors.yml` (what is tracked), `tiers.yml` (registry rows), `reviews.yml` (suggested verdicts).
+- `scripts/denoise.rb` and `results/`: the original go/no-go test, its report, and the 2026-09-25 human read.
+- `test/fixtures/files/`: real OTA documents behind the regression tests.
+- `corpus/`: gitignored OTA clone.

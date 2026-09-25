@@ -1,0 +1,118 @@
+# Suggested verdicts for backfilled events, from the 2026-09-25 read (see
+# results/human-read-2026-09-25.md, redone at segment level after anchoring).
+# Loading these NEVER publishes anything: events stay pending until a human
+# approves them in /admin. Keyed by document, first-recorded date and kind.
+# classification: position | scope | disclosure | wording | churn | unrelated
+
+# --- ChatGPT ---------------------------------------------------------------
+- {doc: ChatGPT/Privacy Policy.md, date: 2024-06-10, classification: wording, direction: wording_only,
+   one_line: "OpenAI's privacy policy restructured its legal-basis wording for training; the opt-out instruction stayed.",
+   note: '"we may use Content" briefly became "we use Content" (reverted 2024-11-05). Same practice.'}
+- {doc: ChatGPT/Privacy Policy.md, date: 2024-11-05, classification: wording, direction: wording_only,
+   one_line: '"We use Content" went back to "we may use Content" to train the models that power ChatGPT.'}
+- {doc: ChatGPT/Privacy Policy.md, date: 2025-07-31, classification: disclosure, direction: disclosure,
+   one_line: "OpenAI's privacy policy added a plain-language section: ChatGPT improves by training on conversations unless you opt out.",
+   note: Best single quote of the consumer default. Names Sora and Operator, excludes Temporary Chat.}
+- {doc: ChatGPT/Privacy Policy.md, date: 2026-05-18, classification: position, direction: scope_widened,
+   one_line: "OpenAI removed \"We don't use your content to market our services or create advertising profiles of you\" from its training section.",
+   note: Same release introduced ads in ChatGPT. Training default itself unchanged.}
+- {doc: ChatGPT/Terms of Service.md, date: 2024-06-10, classification: wording, direction: wording_only,
+   one_line: "ChatGPT's opt-out moved from a help-centre form to account settings."}
+- {doc: ChatGPT/Terms of Service.md, date: 2025-05-17, classification: wording, direction: wording_only,
+   one_line: '"Help Center article" became "article".'}
+- {doc: ChatGPT/Business Privacy Policy.md, date: 2025-08-30, classification: wording, direction: wording_only,
+   one_line: '"ChatGPT Team" renamed "ChatGPT Business" in the no-training list.'}
+- {doc: ChatGPT/Business Privacy Policy.md, date: 2025-11-20, classification: scope, direction: scope_widened,
+   one_line: 'OpenAI added "By default" to its promise not to train on data from connectors, and added ChatGPT for Teachers to the no-training list.',
+   note: '"We do not train on any business data accessed from connectors" became "By default, we do not...", which admits an opt-in.'}
+- {doc: ChatGPT/Business Privacy Policy.md, date: 2026-01-09, classification: scope, direction: scope_widened,
+   one_line: "ChatGPT for Healthcare joined the no-training-by-default list; \"business data\" became \"data\" and connectors became apps."}
+
+# --- Claude.ai -------------------------------------------------------------
+- {doc: Claude.ai/Privacy Policy.md, date: 2025-08-29, classification: position, direction: now_trains,
+   one_line: 'Claude.ai flipped from "we will not use your Inputs or Outputs to train our models, unless" to training by default unless you opt out.',
+   note: Clearest change in the corpus. Same day as the Terms of Service change.}
+- {doc: Claude.ai/Privacy Policy.md, date: 2025-09-01, classification: disclosure, direction: disclosure,
+   one_line: "Anthropic's privacy policy began listing the sources it trains on: public web data, licensed datasets and user inputs submitted as feedback or opted in."}
+- {doc: Claude.ai/Privacy Policy.md, date: 2025-11-01, classification: disclosure, direction: disclosure,
+   one_line: "Anthropic stated its legal basis for training: legitimate interests in training and improving its AI models."}
+- {doc: Claude.ai/Privacy Policy.md, date: 2026-06-08, classification: scope, direction: scope_widened,
+   one_line: '"Train our models" became "train and improve Anthropic AI models", and research on the societal impacts of AI became a stated purpose.'}
+- {doc: Claude.ai/Privacy Policy.md, date: 2026-07-08, classification: wording, direction: wording_only,
+   one_line: '"Third party sources" became "sources" in the list of training data sources.'}
+- {doc: Claude.ai/Terms of Service.md, date: 2025-08-29, classification: position, direction: now_trains,
+   one_line: 'Claude.ai terms went from "We will not train our models on any Materials that are not publicly available" to training unless you opt out.'}
+- {doc: Claude.ai/Terms of Service.md, date: 2025-11-28, classification: scope, direction: scope_widened,
+   one_line: 'Anthropic added "to develop other products and services" to what it may use your Materials for.'}
+
+# --- Microsoft Copilot -----------------------------------------------------
+- {doc: Microsoft Copilot/Privacy Policy.md, date: 2025-02-05, classification: churn,
+   one_line: "Training sentence first captured on an OTA extraction upgrade.",
+   note: Appeared on OTA's "technical or declaration upgrade" commit. Cannot tell whether Microsoft added it or OTA began capturing more of the page. Not a dated change.}
+- {doc: Microsoft Copilot/Privacy Policy.md, date: 2025-07-15, classification: scope, direction: scope_narrowed,
+   one_line: "Microsoft stated that Xbox's AI support features do not use children's data for model training."}
+- {doc: Microsoft Copilot/Privacy Policy.md, date: 2025-10-11, classification: position, direction: now_trains,
+   one_line: "Microsoft stated that in certain markets it trains Copilot's generative models on consumer conversations unless you opt out."}
+- {doc: Microsoft Copilot/Privacy Policy.md, date: 2025-12-06, kind: anchor_lost, classification: churn,
+   one_line: "OTA's capture of the Microsoft Privacy Statement broke.",
+   note: Since OTA's 2025-12-06 extraction upgrade the capture is only the page header. The registry quotes the last good capture (2025-12-09). Worth reporting upstream to OTA.}
+
+# --- GitHub Copilot --------------------------------------------------------
+- {doc: GitHub Copilot/Terms of Service.md, date: 2024-12-19, classification: scope, direction: scope_widened,
+   one_line: "With Copilot Free, GitHub said free users' data may be used for AI model training where permitted and if allowed in settings."}
+- {doc: GitHub Copilot/Terms of Service.md, date: 2026-04-27, classification: position, direction: scope_widened,
+   one_line: "GitHub's terms granted GitHub and its affiliates a licence to train AI models on your content, including private-repository inputs to AI features, unless you opt out."}
+
+# --- Perplexity: no events in the window ------------------------------------
+
+# --- Grok ------------------------------------------------------------------
+- {doc: Grok/Terms of Service.md, date: 2025-08-01, classification: position, direction: scope_narrowed,
+   one_line: "xAI's blanket licence to train on your Materials became a setting you control; logged-out use still grants full training rights.",
+   note: OTA has no capture between 2023-11-20 and 2025-08-01, so the change happened somewhere in that window.}
+- {doc: Grok/Privacy Policy.md, date: 2025-08-01, classification: position, direction: scope_widened,
+   one_line: 'xAI dropped "we train our models only with the Usage Data you voluntarily choose to provide" and now says you can object in settings.',
+   note: Capture gap from 2024-01-10 to 2025-08-01.}
+- {doc: Grok/Privacy Policy.md, date: 2026-05-18, classification: scope, direction: scope_narrowed,
+   one_line: "xAI promised not to train on content from Google apps connected through Google OAuth."}
+- {doc: Grok/Commercial Terms.md, date: 2026-05-18, classification: position, direction: scope_widened,
+   one_line: "xAI's enterprise terms dropped automatic 30-day deletion of User Content and claimed ownership of de-identified data for any lawful purpose.",
+   note: The promise not to train on User Content survives, now reworded.}
+
+# --- Cursor ----------------------------------------------------------------
+- {doc: Cursor/Terms of Service.md, date: 2025-04-19, classification: wording, direction: wording_only,
+   one_line: '"Unless you opt-in to allow" became "unless you allow". Same default.'}
+- {doc: Cursor/Terms of Service.md, date: 2025-06-14, classification: position, direction: scope_narrowed,
+   one_line: "Cursor replaced its Privacy Mode clause with: Anysphere will not train, or let any third party train, AI models on your content unless you explicitly agree."}
+- {doc: Cursor/Privacy Policy.md, date: 2025-06-14, classification: disclosure, direction: disclosure,
+   one_line: "Cursor's privacy policy stated it does not train on inputs or suggestions except flagged, reported or explicitly agreed content."}
+
+# --- Windsurf (Codeium) ----------------------------------------------------
+- {doc: Codeium/Terms of Service.md, date: 2025-02-25, classification: scope, direction: scope_narrowed,
+   one_line: "Pro users' no-training limits were made to override the general usage rights."}
+- {doc: Codeium/Terms of Service.md, date: 2025-04-08, classification: wording, direction: wording_only,
+   one_line: Opt-out email address changed from codeium.com to windsurf.com.}
+- {doc: Codeium/Terms of Service.md, date: 2025-05-09, classification: scope, direction: scope_widened,
+   one_line: 'Models labelled "(no ZDR)" let the provider store your data, and more features were added to the storage list.'}
+- {doc: Codeium/Terms of Service.md, date: 2025-06-10, classification: wording, direction: wording_only,
+   one_line: Definitions reworded; the email route to opt out was removed, leaving the settings toggle.}
+- {doc: Codeium/Terms of Service.md, date: 2026-04-15, classification: wording, direction: wording_only,
+   one_line: Devin added to the list of products that store code snippets.}
+- {doc: Codeium/Terms of Service.md, date: 2026-07-01, classification: position, direction: scope_widened,
+   one_line: 'After the Cognition acquisition, Windsurf removed "We will never use your Autocomplete User Content to improve generative machine learning models" and limited the training opt-out to paid tiers.'}
+
+# --- DeepSeek --------------------------------------------------------------
+- {doc: DeepSeek/Privacy Policy.md, date: 2025-02-23, classification: position, direction: now_trains,
+   one_line: "DeepSeek's privacy policy first named training its machine learning models, and public internet data, as purposes."}
+- {doc: DeepSeek/Privacy Policy.md, date: 2025-04-28, classification: wording, direction: wording_only,
+   one_line: '"Information" became "Personal Data".'}
+- {doc: DeepSeek/Privacy Policy.md, date: 2025-12-23, classification: position, direction: scope_narrowed,
+   one_line: "DeepSeek added a right to opt out of the use of your personal data for training its models."}
+- {doc: DeepSeek/Privacy Policy.md, date: 2026-02-10, classification: scope, direction: scope_widened,
+   one_line: "DeepSeek disclosed that entities in its corporate group process user data for foundation model training."}
+
+# --- Jasper ----------------------------------------------------------------
+- {doc: Jasper/Terms of Service.md, date: 2024-02-08, classification: position, direction: scope_widened,
+   one_line: "Jasper's training licence stopped requiring customer data to be aggregated and de-identified, and became perpetual and irrevocable.",
+   note: 'Same day as an OTA extraction upgrade, but the text genuinely differs: the old "(ii) train ... provided ... aggregated and de-identified" licence is replaced by a perpetual licence covering "modifying, improving, and enhancing artificial intelligence models". Check Jasper''s archived terms before publishing.'}
+- {doc: Jasper/Terms of Service.md, date: 2025-09-11, classification: scope, direction: scope_narrowed,
+   one_line: "Jasper gave EU and UK users a right to object to the use of their content for improving AI models."}

@@ -1,0 +1,220 @@
+# Hand-chosen anchors: stable phrases that identify the segments (paragraph,
+# bullet or table cell) of each document's training clause. Matching is
+# case-insensitive after normalisation. A phrase must survive routine edits, so
+# prefer the core construction ("use your inputs and outputs to train") over
+# wording that vendors rephrase. Chosen 2026-09-25 from a survey of every
+# segment the regex net matched across the full OTA history.
+#
+# Deliberately NOT anchored: indemnification, fine-tuning API, output
+# limitations, "how we train" process descriptions, data-type lists. Those
+# caused the locator churn found by the human read.
+
+- vendor: ChatGPT
+  slug: chatgpt
+  ota_service: ChatGPT
+  summary: OpenAI's assistant. Consumer plans and business plans are governed by different documents.
+  documents:
+    - name: Privacy Policy
+      ota_path: ChatGPT/Privacy Policy.md
+      anchors:
+        - to train the models that power
+        - data we have collected from the internet to train our models
+        - when we train
+        - uses content from our services to improve and train
+        - they can improve over time
+        - we may use your content to train our models
+        - do not train on my content
+        - chats from temporary chat
+        - if you enable temporary chat
+        - sora has separate controls
+        - in our training datasets
+        - can be used to improve and train our models
+        - if training is enabled
+        - openly accessible on the internet
+    - name: Terms of Service
+      ota_path: ChatGPT/Terms of Service.md
+      anchors:
+        - if you do not want us to use your content to train our models
+    - name: Business Privacy Policy
+      ota_path: ChatGPT/Business Privacy Policy.md
+      anchors:
+        - we do not train our models on your
+        - we do not use your business data for training
+        - train our models on any
+        - used to train other models
+        - isn't used for training our models
+        - trains its models in two stages
+
+- vendor: Claude.ai
+  slug: claude-ai
+  ota_service: Claude.ai
+  summary: Anthropic's assistant. Consumer plans (Free, Pro, Max) and commercial plans have separate terms.
+  documents:
+    - name: Privacy Policy
+      ota_path: Claude.ai/Privacy Policy.md
+      anchors:
+        - use your inputs or outputs to train
+        - use your inputs and outputs to train
+        - develop our language models that power our services
+        - train our ai models as permitted under applicable laws
+        - when you submit feedback, we disassociate
+        - to train our trust and safety
+        - conduct research (including model training)
+        - conduct research, including training our models
+        - legitimate interests to train and improve our ai models
+        - may obtain personal data from the following
+        - user inputs and outputs submitted as feedback
+    - name: Terms of Service
+      ota_path: Claude.ai/Terms of Service.md
+      anchors:
+        - our use of materials
+        - regarding any materials
+    - name: Commercial Terms
+      ota_path: Claude.ai/Commercial Terms.md
+      anchors:
+        - may not train models on customer content
+
+- vendor: Microsoft Copilot
+  slug: microsoft-copilot
+  ota_service: Microsoft Copilot
+  summary: Microsoft's consumer Copilot assistant, covered by the Microsoft Privacy Statement.
+  documents:
+    - name: Privacy Policy
+      ota_path: Microsoft Copilot/Privacy Policy.md
+      anchors:
+        - we may use your data to develop and train our ai models
+        - use children's data for model training
+        - we use conversation data to train
+
+- vendor: GitHub Copilot
+  slug: github-copilot
+  ota_service: GitHub Copilot
+  summary: GitHub's coding assistant. The training licence sits in GitHub's Terms of Service.
+  documents:
+    - name: Terms of Service
+      ota_path: GitHub Copilot/Terms of Service.md
+      anchors:
+        - may be used for ai model training
+        - for the purpose of training, developing, and improving
+        - as input to ai features
+        - affiliates may use your inputs and outputs
+
+- vendor: Perplexity
+  slug: perplexity
+  ota_service: Perplexity
+  summary: Perplexity's answer engine and API.
+  documents:
+    - name: Developer Terms
+      ota_path: Perplexity/Developer Terms.md
+      anchors:
+        - customer content to train
+    - name: Data Processor Agreement
+      ota_path: Perplexity/Data Processor Agreement.md
+      anchors:
+        - will not be used for training
+    - name: Privacy Policy
+      ota_path: Perplexity/Privacy Policy.md
+      anchors:
+        - email service information to create, train
+
+- vendor: Grok
+  slug: grok
+  ota_service: Grok
+  summary: xAI's assistant, on grok.com, in X, and through the xAI API.
+  documents:
+    - name: Terms of Service
+      ota_path: Grok/Terms of Service.md
+      anchors:
+        - develop, train, test, improve and operate
+        - used for product development or model training
+    - name: Privacy Policy
+      ota_path: Grok/Privacy Policy.md
+      anchors:
+        - to train our models, but only with
+        - publicly available on the internet to train our models
+        - object to our use of your information to train
+        - google apps content
+    - name: Commercial Terms
+      ota_path: Grok/Commercial Terms.md
+      anchors:
+        - de-identified data and data retention
+
+- vendor: Cursor
+  slug: cursor
+  ota_service: Cursor
+  summary: Anysphere's AI code editor.
+  documents:
+    - name: Terms of Service
+      ota_path: Cursor/Terms of Service.md
+      anchors:
+        - including the training of language models
+        - will not use content to train
+    - name: Privacy Policy
+      ota_path: Cursor/Privacy Policy.md
+      anchors:
+        - use inputs or suggestions to train
+
+- vendor: Windsurf (Codeium)
+  slug: windsurf
+  ota_service: Codeium
+  summary: The Codeium editor, renamed Windsurf in 2025 and acquired by Cognition. OTA still files it under Codeium.
+  documents:
+    - name: Terms of Service
+      ota_path: Codeium/Terms of Service.md
+      anchors:
+        - use of autocomplete user content to improve services
+        - use of chat user content to improve services
+        - may use customer data for model training
+        - elect to place limits on the use of
+
+- vendor: DeepSeek
+  slug: deepseek
+  ota_service: DeepSeek
+  summary: DeepSeek's consumer chat app and platform.
+  documents:
+    - name: Privacy Policy
+      ota_path: DeepSeek/Privacy Policy.md
+      anchors:
+        - by training and improving our technology
+        - to train our models and provide
+        - to train and improve our technology
+        - for training our models or optimizing
+        - foundation model training
+
+- vendor: Jasper
+  slug: jasper
+  ota_service: Jasper
+  summary: Jasper's AI marketing platform.
+  documents:
+    - name: Terms of Service
+      ota_path: Jasper/Terms of Service.md
+      anchors:
+        - train the artificial intelligence models developed by jasper
+        - enhancing artificial intelligence models
+        - object to the use of your customer property
+
+- vendor: Le Chat
+  slug: le-chat
+  ota_service: Le Chat
+  summary: Mistral AI's assistant and platform.
+  documents:
+    - name: Terms of Service
+      ota_path: Le Chat/Terms of Service.md
+      anchors:
+        - we do not use your data to train our artificial intelligence models
+        - mistral ai may use your feedback
+    - name: Privacy Policy
+      ota_path: Le Chat/Privacy Policy.md
+      anchors:
+        - to train our artificial intelligence models
+        - subject to your opt-out
+        - which allows you to object
+        - input and output data for model training
+    - name: Data Processor Agreement
+      ota_path: Le Chat/Data Processor Agreement.md
+      anchors:
+        - training its artificial intelligence models
+    - name: Commercial Terms
+      ota_path: Le Chat/Commercial Terms.md
+      anchors:
+        - do not use your data to train our models
