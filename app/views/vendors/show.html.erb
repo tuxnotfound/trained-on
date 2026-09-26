@@ -1,8 +1,8 @@
 <% page_title @vendor.name %>
-<% content_for :description, "Does #{@vendor.name} train on your inputs? The clause quoted per plan, and every dated change to it." %>
+<% content_for :description, "Does #{@vendor.name} train on my prompts? What its terms say for each plan, in their words, and every dated change." %>
 <% content_for :head, auto_discovery_link_tag(:atom, vendor_feed_url(@vendor.slug), title: "Trained On: #{@vendor.name}") %>
 
-<h1>Does <%= @vendor.name %> train on your inputs?</h1>
+<h1>Does <%= @vendor.name %> train on my prompts?</h1>
 <% if @vendor.summary.present? %><p class="lede"><%= @vendor.summary %></p><% end %>
 
 <div class="tiers">
@@ -21,12 +21,12 @@
 <% if @events.any? %>
   <ul class="changes"><%= render partial: "shared/change_item", collection: @events, as: :event %></ul>
 <% else %>
-  <p class="muted">No change to the training clause is recorded for <%= @vendor.name %> in the period Open Terms Archive has tracked.</p>
+  <p class="muted"><%= @vendor.name %> has not changed what it says about training on your prompts in the period Open Terms Archive has tracked.</p>
 <% end %>
 <p class="small"><%= link_to "Atom feed for #{@vendor.name}", vendor_feed_path(@vendor.slug) %></p>
 
 <h2>Full clause history</h2>
-<p class="small muted">Every distinct state of the clause in each tracked document, oldest first, with the words that changed from the previous state.</p>
+<p class="small muted">Every version of the training clause in each tracked document, oldest first, with the words that changed.</p>
 <% @documents.each do |document| %>
   <h3><%= document.name %></h3>
   <p class="small muted"><%= pluralize(document.versions_walked.to_i, "recorded version") %> reduce to <%= pluralize(document.clause_versions.size, "clause state") %>. <%= link_to "Source history on GitHub", document.ota_history_url %>.</p>

@@ -1,6 +1,6 @@
 atom_feed(root_url: root_url, id: "tag:trained-on,2026:#{request.path}") do |feed|
   feed.title @title
-  feed.subtitle "Reviewed changes to the clauses in which AI vendors say whether they train on your data. Derived from Open Terms Archive, ODC-By 1.0."
+  feed.subtitle "Every time an AI company changed what its terms say about training on your prompts. Derived from Open Terms Archive, ODC-By 1.0."
   feed.updated(@events.first&.reviewed_at || Time.current)
 
   @events.each do |event|

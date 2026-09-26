@@ -3,7 +3,7 @@
 # CX22, ~EUR 4-5/month), then `bin/kamal setup`. See README "Deploy".
 #
 #   TRAINED_ON_SERVER_IP   the server's public IP
-#   TRAINED_ON_HOST        the public hostname, e.g. trainedon.example
+#   TRAINED_ON_HOST        the public hostname (trainedon.me)
 #   TRAINED_ON_REGISTRY    image name on a registry you can push to, e.g. ghcr.io/<user>/trained-on
 service: trained-on
 image: <%= ENV.fetch("TRAINED_ON_REGISTRY", "trained-on") %>
@@ -14,7 +14,7 @@ servers:
 
 proxy:
   ssl: true
-  host: <%= ENV.fetch("TRAINED_ON_HOST", "trained-on.example") %>
+  host: <%= ENV.fetch("TRAINED_ON_HOST", "trainedon.me") %>
 
 registry:
   server: ghcr.io
@@ -33,7 +33,7 @@ env:
   clear:
     # Run Solid Queue (and so the nightly refresh) inside Puma: one process, one box.
     SOLID_QUEUE_IN_PUMA: true
-    APP_HOST: "<%= ENV.fetch("TRAINED_ON_HOST", "trained-on.example") %>"
+    APP_HOST: "<%= ENV.fetch("TRAINED_ON_HOST", "trainedon.me") %>"
     TRAINED_ON_ADMIN_USER: "<%= ENV.fetch("TRAINED_ON_ADMIN_USER", "reviewer") %>"
     TRAINED_ON_REVIEWER: "<%= ENV.fetch("TRAINED_ON_REVIEWER", "") %>"
     TRAINED_ON_MAIL_FROM: "<%= ENV.fetch("TRAINED_ON_MAIL_FROM", "") %>"

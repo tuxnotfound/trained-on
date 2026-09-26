@@ -4,7 +4,7 @@
 <article>
   <header class="event-head">
     <p><%= classification_badge(@event) %><%= draft_marker(@event) %></p>
-    <h1><%= @vendor.name %> changed its <%= @event.document.name.downcase %></h1>
+    <h1><%= @vendor.name %> changed what its <%= @event.document.name.downcase %> says</h1>
     <p class="headline"><%= @event.one_line %></p>
   </header>
 
@@ -34,7 +34,7 @@
 
   <h2>What changed</h2>
   <%= render_diff(@diff) %>
-  <p class="legend"><del>Removed</del> <ins>Added</ins>. Only the sentences of the training clause are shown, not the whole document.</p>
+  <p class="legend"><del>Removed</del> <ins>Added</ins>. Only the sentences about training are shown, not the whole document.</p>
 
   <div class="two-up">
     <section>

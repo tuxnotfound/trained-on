@@ -1,7 +1,7 @@
 class FeedsController < ApplicationController
   def changes
     @events = ClauseEvent.published.includes(document: :vendor).order(occurred_on: :desc).limit(50)
-    @title = "Trained On: changes to AI vendors' training clauses"
+    @title = "Trained On: when the answer changed"
     render :index
   end
 

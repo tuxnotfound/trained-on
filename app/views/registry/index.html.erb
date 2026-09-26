@@ -1,6 +1,6 @@
 <% page_title nil %>
-<h1>Does this AI tool train on your inputs?</h1>
-<p class="lede">The answer for each plan, quoting the contract clause that says so, dated. Below the table, every time a vendor actually changed that clause. Thousands of recorded document versions reduce to a few dozen real changes.</p>
+<h1>Is this AI training on my prompts?</h1>
+<p class="lede">What each tool's own terms say about your prompts, in their words, with the date. Below the table, every time a company actually changed those words. Thousands of recorded versions of these documents come down to a few dozen real changes.</p>
 
 <% if @last_capture && @last_capture < 3.days.ago %>
   <p class="banner banner--warn">The newest document capture processed here is from <%= date_tag(@last_capture) %>. This record may be behind the vendors' current terms.</p>
@@ -9,7 +9,7 @@
 <div class="scroll-x">
 <table class="registry">
   <thead>
-    <tr><th scope="col">Tool and plan</th><th scope="col">Answer</th><th scope="col">What the terms say</th><th scope="col">On record since</th></tr>
+    <tr><th scope="col">Tool and plan</th><th scope="col">Trains on my prompts?</th><th scope="col">In their words</th><th scope="col">On record since</th></tr>
   </thead>
   <tbody>
     <% @vendors.each do |vendor| %>
@@ -38,7 +38,7 @@
 </div>
 
 <% if @vendors.empty? %>
-  <p class="banner">Nothing is published yet. Every row and every change is reviewed by a person before it appears here.</p>
+  <p class="banner">Nothing is published yet. Every row and every change is checked before it appears here.</p>
 <% end %>
 
 <h2>Latest changes</h2>

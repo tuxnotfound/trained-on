@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= content_for(:title) || "Trained On: which AI tools train on your inputs" %></title>
+    <title><%= content_for(:title) || "Trained On: is this AI training on my prompts?" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="<%= content_for(:description) || "A dated record of which AI tools train on your inputs, with the contract clause quoted and every real change diffed." %>">
+    <meta name="description" content="<%= content_for(:description) || "Is this AI training on my prompts? What each tool's own terms say, quoted and dated, and every time the answer changed." %>">
     <meta name="color-scheme" content="light dark">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -23,7 +23,7 @@
     <% end %>
     <header class="site-head">
       <div class="wrap">
-        <a class="brand" href="<%= root_path %>">Trained On<small>does this AI tool train on your inputs?</small></a>
+        <a class="brand" href="<%= root_path %>">Trained On<small>is this AI training on my prompts?</small></a>
         <nav class="site-nav" aria-label="Main">
           <%= link_to "Registry", root_path, "aria-current": (current_page?(root_path) ? "page" : nil) %>
           <%= link_to "Changes", changes_path, "aria-current": (current_page?(changes_path) ? "page" : nil) %>
@@ -41,7 +41,7 @@
     <footer class="site-foot">
       <div class="wrap">
         <p>Clause history comes from <a href="https://opentermsarchive.org">Open Terms Archive</a>'s <a href="https://github.com/OpenTermsArchive/genai-contrib-versions">genai-contrib collection</a>, by Open Terms Archive contributors, under <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-By 1.0</a>. This site's data is published under the same licence.</p>
-        <p>This is a record of what contracts say, with dates and links. It is not legal advice and not an assessment of any vendor.</p>
+        <p>This is a record of what the terms say, with dates and links. It is not legal advice, and it does not judge any company.</p>
       </div>
     </footer>
   </body>

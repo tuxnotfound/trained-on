@@ -1,13 +1,13 @@
 # One row of the registry: the current answer for one plan of one vendor.
 class Tier < ApplicationRecord
   ANSWERS = {
-    "trains_opt_out" => "Trains on your inputs by default. You can opt out.",
-    "trains_no_opt_out" => "Trains on your inputs. No opt-out stated.",
-    "trains_regional_opt_out" => "Trains on your inputs. Opt-out only in some regions.",
-    "trains_in_some_markets" => "Trains on your inputs in certain markets. You can opt out.",
-    "your_choice_default_unstated" => "You choose in settings whether your inputs train models. The terms do not state the default.",
-    "no_training_default" => "Does not train on your inputs by default.",
-    "no_training" => "Does not train on your inputs.",
+    "trains_opt_out" => "Yes, by default. You can opt out.",
+    "trains_no_opt_out" => "Yes. No opt-out stated.",
+    "trains_regional_opt_out" => "Yes. Opt-out only in some regions.",
+    "trains_in_some_markets" => "Yes, in certain markets. You can opt out.",
+    "your_choice_default_unstated" => "You choose in settings. The terms do not say which way it starts.",
+    "no_training_default" => "No, unless you opt in.",
+    "no_training" => "No.",
     "unclear" => "The terms do not say clearly."
   }.freeze
   STALE_AFTER = 30.days

@@ -1,7 +1,8 @@
 # Trained On
 
-A public, dated record of which AI tools train on your inputs. Each registry row quotes
-the contract clause that says so. Every real change to that clause is diffed on a page of
+trainedon.me: is this AI training on my prompts? A public, dated record of what each AI
+tool's terms say about training on your prompts. Each registry row quotes the clause that
+says so. Every real change to that clause is diffed on a page of
 its own. The corpus is Open Terms Archive's `genai-contrib` collection (ODC-By 1.0, by
 Open Terms Archive contributors). The product is the denoising on top of it.
 
@@ -110,7 +111,7 @@ Kamal to one small server, per the build plan (a Hetzner CX22). SQLite, backups 
 corpus clone live on the `trained_on_storage` volume. Solid Queue runs inside Puma.
 
 ```
-export TRAINED_ON_SERVER_IP=... TRAINED_ON_HOST=... TRAINED_ON_REGISTRY=ghcr.io/<user>/trained-on
+export TRAINED_ON_SERVER_IP=... TRAINED_ON_HOST=trainedon.me TRAINED_ON_REGISTRY=ghcr.io/<user>/trained-on
 export KAMAL_REGISTRY_USERNAME=... KAMAL_REGISTRY_PASSWORD=... TRAINED_ON_ADMIN_PASSWORD=...
 export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...  # optional: email digest
 export ANTHROPIC_API_KEY=... OPENAI_API_KEY=... GEMINI_API_KEY=...                    # the panel; all three or it only advises
