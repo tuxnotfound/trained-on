@@ -110,14 +110,20 @@ found, and that every registry quote is verbatim.
 Kamal to one small server, per the build plan (a Hetzner CX22). SQLite, backups and the
 corpus clone live on the `trained_on_storage` volume. Solid Queue runs inside Puma.
 
+Secrets come from the shell or, failing that, from `.env` (see `.kamal/secrets` and
+`bin/secret`). With the three API keys and the admin password already in `.env`, the deploy
+needs two more things: the server's IP and a GitHub token with `write:packages` for ghcr.io.
+
 ```
-export TRAINED_ON_SERVER_IP=... TRAINED_ON_HOST=trainedon.me TRAINED_ON_REGISTRY=ghcr.io/<user>/trained-on
-export KAMAL_REGISTRY_USERNAME=... KAMAL_REGISTRY_PASSWORD=... TRAINED_ON_ADMIN_PASSWORD=...
+echo 'KAMAL_REGISTRY_PASSWORD=ghp_...' >> .env
+export TRAINED_ON_SERVER_IP=...
 export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...  # optional: email digest
-export ANTHROPIC_API_KEY=... OPENAI_API_KEY=... GEMINI_API_KEY=...                    # the panel; all three or it only advises
-bin/kamal setup
+bin/kamal setup       # installs Docker on the server, builds and pushes the image, boots the app
 bin/kamal bootstrap   # clone the corpus, seed, rebuild history, replay review decisions
 ```
+
+The image is `ghcr.io/tuxnotfound/trained-on`, the host `trainedon.me`, and the server is
+reached with `~/.ssh/id_ed25519_tuxnotfound`, all set in `config/deploy.yml`.
 
 Put Cloudflare in front for the launch spike. `bin/kamal backup` writes a SQLite copy to
 `storage/backups`. Shipping it off the box, to R2 for example, is not wired up yet.
