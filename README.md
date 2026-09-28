@@ -109,9 +109,10 @@ found, and that every registry quote is verbatim.
 
 Kamal to the shared portfolio box: one Hetzner Cloud server in the EU that every project shares
 behind Kamal 2's proxy, decided 2026-09-28. The build plan's own CX22 for this project is
-withdrawn. The box does not exist yet: order a CX33 (4 vCPU, 8 GB) in Falkenstein, Nuremberg or
-Helsinki, or a CAX21 (Arm) if CX is out of stock, and for Arm set `builder.arch: arm64` in
-`config/deploy.yml`. Never rescale an existing server for this; they keep pre-June-2026 prices.
+withdrawn. The box exists since 2026-09-28: a CX33 (4 vCPU, 8 GB, x86) in Nuremberg, so
+`builder.arch` stays amd64. Its IP and SSH key are in the control tower's `HOSTING.md`; the
+deploy key here is the tuxnotfound key, which must be in root's `authorized_keys` on the box.
+Never rescale one of the older servers instead; they keep pre-June-2026 prices.
 The full decision, and who else lands on the box, is in the control tower under
 `projects/trained-on/STATUS.md`, section "Hosting", and in its `HOSTING.md`. SQLite, the corpus
 clone and local backup copies live on the `trained_on_storage` volume. Solid Queue runs inside
