@@ -97,3 +97,12 @@ namespace :trained_on do
     Tier.refresh_verification!
   end
 end
+
+namespace :trained_on do
+  desc "Compare the Cloudflare ranges in config/initializers/trusted_proxies.rb with Cloudflare's current list"
+  task cloudflare_ips: :environment do
+    current = TrainedOn::Readers::Http.json(:get, "https://api.cloudflare.com/client/v4/ips").dig("result").values_at("ipv4_cidrs", "ipv6_cidrs").flatten.sort
+    ours = CLOUDFLARE_IPS.sort
+    puts(current == ours ? "up to date (#{ours.size} ranges)" : "DIFFERS\nadd: #{(current - ours).join(' ')}\nremove: #{(ours - current).join(' ')}")
+  end
+end
