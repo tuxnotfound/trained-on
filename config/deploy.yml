@@ -17,6 +17,9 @@ servers:
 proxy:
   ssl: true
   host: <%= ENV.fetch("TRAINED_ON_HOST", "trainedon.me") %>
+  # Behind Cloudflare: pass its X-Forwarded-For through, or Rails sees the edge
+  # as every client and the admin login's rate limit locks everyone out.
+  forward_headers: true
 
 registry:
   server: ghcr.io
