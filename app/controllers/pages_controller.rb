@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  include PublicCache
+
   def methodology
     @documents = Document.includes(:vendor, :anchors, :clause_versions).order(:ota_path)
     @walked = @documents.sum { |d| d.versions_walked.to_i }

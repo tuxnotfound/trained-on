@@ -3,6 +3,8 @@ require "csv"
 module Api
   module V1
     class ChangesController < ApplicationController
+      include PublicCache
+
       COLUMNS = %w[date vendor document classification direction summary decided_by reverses previous_capture url ota_commit].freeze
 
       def index

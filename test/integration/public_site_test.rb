@@ -72,6 +72,47 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "public pages are cacheable at the edge and set no cookie" do
+    @event.publish!
+    confirm_tier
+    [ root_path, changes_path, change_path(@event), vendor_path(@vendor), methodology_path, data_path,
+      changes_feed_path, vendor_feed_path(@vendor.slug), api_v1_vendors_path, api_v1_changes_path, registry_csv_path ].each do |path|
+      get path
+      assert_response :success, path
+      assert_match(/public/, response.headers["cache-control"], path)
+      assert_match(/s-maxage=600/, response.headers["cache-control"], path)
+      assert_nil response.headers["set-cookie"], "#{path} set a cookie"
+    end
+  end
+
+  test "a missing page, the admin and the preview are never cacheable" do
+    get vendor_path(@vendor)
+    assert_response :not_found
+    assert_no_match(/public/, response.headers["cache-control"].to_s)
+
+    ENV["TRAINED_ON_ADMIN_USER"] = "reviewer"
+    ENV["TRAINED_ON_ADMIN_PASSWORD"] = "correct horse"
+    post admin_login_path, params: { username: "reviewer", password: "correct horse" }
+    get admin_root_path
+    assert_response :success
+    assert_match(/private/, response.headers["cache-control"])
+
+    post admin_preview_path
+    get root_path
+    assert_response :success
+    assert_match "Drafts are visible", response.body
+    assert_match(/private/, response.headers["cache-control"])
+    assert_no_match(/public/, response.headers["cache-control"])
+  ensure
+    ENV.delete("TRAINED_ON_ADMIN_USER")
+    ENV.delete("TRAINED_ON_ADMIN_PASSWORD")
+  end
+
+  test "the footer has a way to reach me" do
+    get root_path
+    assert_select "footer a[href^='mailto:']", /Email me/
+  end
+
   test "methodology and data pages render" do
     get methodology_path
     assert_response :success

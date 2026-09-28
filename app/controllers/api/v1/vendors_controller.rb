@@ -4,6 +4,8 @@ module Api
   module V1
     # The registry as data, ODC-By like the corpus it derives from.
     class VendorsController < ApplicationController
+      include PublicCache
+
       def index
         tiers = Tier.verified.includes(:vendor, document: :clause_versions).order("vendors.position", :position).references(:vendor)
         respond_to do |format|

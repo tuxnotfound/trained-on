@@ -1,4 +1,6 @@
 class RegistryController < ApplicationController
+  include PublicCache
+
   def index
     @vendors = visible_vendors
     @tiers = visible_tiers.includes(:vendor, document: :clause_versions).group_by(&:vendor_id)

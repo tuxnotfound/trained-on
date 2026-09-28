@@ -1,4 +1,6 @@
 class VendorsController < ApplicationController
+  include PublicCache
+
   def show
     @vendor = Vendor.find_by!(slug: params[:slug])
     @tiers = visible_tiers.where(vendor: @vendor).includes(document: :clause_versions).order(:position)

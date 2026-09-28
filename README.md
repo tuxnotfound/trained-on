@@ -105,7 +105,7 @@ The regressions run the committed anchors over the real corpus. They assert that
 locator artefacts from the human read stay gone, that Claude.ai's 2025-08-29 flip is still
 found, and that every registry quote is verbatim.
 
-## Deploy (not done yet)
+## Deploy
 
 Kamal to `tux-box`, the one Hetzner Cloud server every project shares behind Kamal 2's proxy
 (decided 2026-09-28; the build plan's own CX22 is withdrawn). CX33, 4 vCPU, 8 GB, x86, Nuremberg,
@@ -159,7 +159,20 @@ R2, a launch precondition on a shared box.
    which breaks the admin rate limit), deploy that, and only then switch both records to
    proxied (orange cloud) and set SSL/TLS to Full (strict). Flexible would loop against
    `force_ssl`.
-7. **Log it** in the control tower: `projects/trained-on/CHANGELOG.md` and the `tux-box` row and
+7. **Cloudflare cache rule, once, before any launch.** The app sends `Cache-Control: public,
+   max-age=60, s-maxage=600` on every plain 200 GET of a public page outside preview
+   (`PublicCache`), and `private` on everything else, but Cloudflare only caches HTML when a
+   rule says so. Caching, Cache Rules, Create rule, name `public pages`, expression
+   `(http.host eq "trainedon.me" and not starts_with(http.request.uri.path, "/admin") and not http.cookie contains "preview=")`,
+   Cache eligibility: Eligible for cache, Edge TTL: use cache-control header if present and
+   bypass if not, Browser TTL: respect origin. If the free plan refuses the cookie clause, drop
+   it: preview responses are `private` so they are never stored, and a preview look at a page
+   that is already cached needs a throwaway query string (`/?x=1`) to reach the box. Verify:
+   `curl -sI https://trainedon.me/` twice, the second says `cf-cache-status: HIT`;
+   `curl -sI https://trainedon.me/admin/login` says `DYNAMIC` or `BYPASS`. Public pages set no
+   cookie (the CSRF token is only rendered in preview), because the edge never stores a
+   response that carries `Set-Cookie`.
+8. **Log it** in the control tower: `projects/trained-on/CHANGELOG.md` and the `tux-box` row and
    Domains table in `HOSTING.md`.
 
 To restore a backup: download the newest `trained-on/production-*.sqlite3.gz` from the bucket,

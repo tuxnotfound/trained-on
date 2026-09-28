@@ -1,4 +1,6 @@
 class FeedsController < ApplicationController
+  include PublicCache
+
   def changes
     @events = ClauseEvent.published.includes(document: :vendor).order(occurred_on: :desc).limit(50)
     @title = "Trained On: when the answer changed"

@@ -1,4 +1,6 @@
 class ChangesController < ApplicationController
+  include PublicCache
+
   def index
     @events = visible_events.includes(document: :vendor).order(occurred_on: :desc)
     @events = @events.where(classification: params[:type]) if params[:type].in?(ClauseEvent::PUBLIC_CLASSIFICATIONS)

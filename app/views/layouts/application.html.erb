@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="<%= content_for(:description) || "Is this AI training on my prompts? What each tool's own terms say, quoted and dated, and every time the answer changed." %>">
     <meta name="color-scheme" content="light dark">
-    <%= csrf_meta_tags %>
+    <%# Only the preview bar has a form. Outside preview the token would write the session and set a cookie, which keeps the edge from caching the page. %>
+    <%= csrf_meta_tags if preview? %>
     <%= csp_meta_tag %>
     <%= auto_discovery_link_tag :atom, changes_feed_url, title: "Trained On: all changes" %>
     <%= yield :head %>
@@ -42,6 +43,7 @@
       <div class="wrap">
         <p>Clause history comes from <a href="https://opentermsarchive.org">Open Terms Archive</a>'s <a href="https://github.com/OpenTermsArchive/genai-contrib-versions">genai-contrib collection</a>, by Open Terms Archive contributors, under <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-By 1.0</a>. This site's data is published under the same licence.</p>
         <p>This is a record of what the terms say, with dates and links. It is not legal advice, and it does not judge any company.</p>
+        <p>Missing a vendor, or found a mistake? <a href="mailto:tuxnotfound@cioga.eu?subject=Trained%20On">Email me</a>. Requests decide which vendor comes next.</p>
       </div>
     </footer>
   </body>
