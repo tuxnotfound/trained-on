@@ -7,8 +7,10 @@ class TrustedProxiesTest < ActionDispatch::IntegrationTest
     assert_equal "203.0.113.9", request.remote_ip
   end
 
-  test "a forged header cannot hide behind an untrusted address" do
-    get root_path, headers: { "REMOTE_ADDR" => "198.51.100.7", "X-Forwarded-For" => "203.0.113.9" }
+  test "a forged header does not hide a visitor, because both proxies append the real address" do
+    # client sends X-Forwarded-For: 203.0.113.9 (forged); Cloudflare appends the client (198.51.100.7);
+    # kamal-proxy appends Cloudflare's edge (104.16.1.1). Trusted addresses are dropped from the right.
+    get root_path, headers: { "REMOTE_ADDR" => "172.18.0.2", "X-Forwarded-For" => "203.0.113.9, 198.51.100.7, 104.16.1.1" }
     assert_equal "198.51.100.7", request.remote_ip
   end
 
