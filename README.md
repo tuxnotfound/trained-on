@@ -107,8 +107,14 @@ found, and that every registry quote is verbatim.
 
 ## Deploy (not done yet)
 
-Kamal to one small server, per the build plan (a Hetzner CX22). SQLite, backups and the
-corpus clone live on the `trained_on_storage` volume. Solid Queue runs inside Puma.
+Kamal to the shared portfolio box: one Hetzner Cloud server in the EU that every project shares
+behind Kamal 2's proxy, decided 2026-09-28. The build plan's own CX22 for this project is
+withdrawn. The box does not exist yet: order a CX33 (4 vCPU, 8 GB) in Falkenstein, Nuremberg or
+Helsinki, or a CAX21 (Arm) if CX is out of stock, and for Arm set `builder.arch: arm64` in
+`config/deploy.yml`. Never rescale an existing server for this; they keep pre-June-2026 prices.
+The full decision, and who else lands on the box, is in the control tower under
+`projects/trained-on/STATUS.md`, section "Hosting", and in its `HOSTING.md`. SQLite, backups and
+the corpus clone live on the `trained_on_storage` volume. Solid Queue runs inside Puma.
 
 Secrets come from the shell or, failing that, from `.env` (see `.kamal/secrets` and
 `bin/secret`). With the three API keys and the admin password already in `.env`, the deploy
@@ -125,7 +131,8 @@ bin/kamal bootstrap   # clone the corpus, seed, rebuild history, replay review d
 The image is `ghcr.io/tuxnotfound/trained-on`, the host `trainedon.me`, and the server is
 reached with `~/.ssh/id_ed25519_tuxnotfound`, all set in `config/deploy.yml`.
 
-Put Cloudflare in front for the launch spike. `bin/kamal backup` writes a SQLite copy to
+Put Cloudflare in front for the launch spike: nameservers at Cloudflare, record proxied, SSL
+mode Full (strict). `bin/kamal backup` writes a SQLite copy to
 `storage/backups`. Shipping it off the box, to R2 for example, is not wired up yet.
 
 ## Layout

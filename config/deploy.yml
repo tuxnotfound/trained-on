@@ -1,6 +1,8 @@
 # Kamal deploy for Trained On. NOT DEPLOYED YET: set the three environment
-# variables below, provision one small server (the build plan says a Hetzner
-# CX22, ~EUR 4-5/month), then `bin/kamal setup`. See README "Deploy".
+# variables below, then `bin/kamal setup` against the shared portfolio box, the
+# one Hetzner server every project shares (decided 2026-09-28; see README
+# "Deploy" and the control tower's HOSTING.md). If that box is Arm (CAX21),
+# set builder.arch to arm64 at the bottom of this file.
 #
 #   TRAINED_ON_SERVER_IP       the server's public IP (required)
 #   KAMAL_REGISTRY_PASSWORD    a GitHub token with write:packages, for ghcr.io (required)
