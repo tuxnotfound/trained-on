@@ -50,6 +50,18 @@ events:
   decided_by: panel
   reviewed_at: '2026-09-25T14:04:29Z'
 - doc: ChatGPT/Privacy Policy.md
+  date: '2024-11-05'
+  kind: change
+  clause: 4c492759834d
+  state: published
+  classification: scope
+  direction: scope_narrowed
+  one_line: OpenAI now says it “may use Content” to train “models that power ChatGPT,”
+    rather than “models that power our Services,” unless you opt out.
+  note: ''
+  decided_by: panel
+  reviewed_at: '2026-09-28T18:36:04Z'
+- doc: ChatGPT/Privacy Policy.md
   date: '2025-07-31'
   kind: change
   clause: e9bb82cf3286
@@ -130,6 +142,28 @@ events:
     you opt out through your account settings”; it adds “Legitimate interests” language.
   decided_by: panel
   reviewed_at: '2026-09-25T14:09:13Z'
+- doc: Claude.ai/Privacy Policy.md
+  date: '2026-06-08'
+  kind: change
+  clause: 479f10050b4e
+  state: published
+  classification: scope
+  direction: scope_widened
+  one_line: '"Train our models" became "train and improve Anthropic AI models", and
+    research on the societal impacts of AI became a stated purpose.'
+  note: ''
+  decided_by: human
+  reviewed_at: '2026-09-28T18:44:38Z'
+- doc: Claude.ai/Privacy Policy.md
+  date: '2026-07-08'
+  kind: change
+  clause: b13635d29643
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: '"Third party sources" became "sources" in the list of training data sources.'
+  decided_by: panel
+  reviewed_at: '2026-09-28T18:37:03Z'
 - doc: Claude.ai/Terms of Service.md
   date: '2025-08-29'
   kind: change
@@ -155,6 +189,18 @@ events:
   decided_by: panel
   reviewed_at: '2026-09-25T14:10:23Z'
 - doc: Codeium/Terms of Service.md
+  date: '2025-02-25'
+  kind: change
+  clause: e0a3779005bc
+  state: published
+  classification: scope
+  direction: scope_narrowed
+  one_line: Pro users' no-training limits were made to override the general usage
+    rights.
+  note: ''
+  decided_by: human
+  reviewed_at: '2026-09-28T18:35:19Z'
+- doc: Codeium/Terms of Service.md
   date: '2025-04-08'
   kind: change
   clause: 9805b2e00902
@@ -164,6 +210,29 @@ events:
   one_line: Opt-out email address changed from codeium.com to windsurf.com.
   decided_by: panel
   reviewed_at: '2026-09-25T14:14:45Z'
+- doc: Codeium/Terms of Service.md
+  date: '2025-05-09'
+  kind: change
+  clause: ec5d29bde1d4
+  state: rejected
+  classification: churn
+  direction: wording_only
+  one_line: Models labelled "(no ZDR)" let the provider store your data, and more
+    features were added to the storage list.
+  note: ''
+  decided_by: human
+  reviewed_at: '2026-09-28T18:39:32Z'
+- doc: Codeium/Terms of Service.md
+  date: '2025-06-10'
+  kind: change
+  clause: c674a079e8b8
+  state: published
+  classification: scope
+  direction: scope_widened
+  one_line: Definitions reworded; the email route to opt out was removed
+  note: ''
+  decided_by: human
+  reviewed_at: '2026-09-28T18:42:22Z'
 - doc: Codeium/Terms of Service.md
   date: '2026-04-15'
   kind: change
@@ -197,6 +266,30 @@ events:
     agreed.”
   decided_by: panel
   reviewed_at: '2026-09-25T14:14:28Z'
+- doc: Cursor/Terms of Service.md
+  date: '2025-04-19'
+  kind: change
+  clause: 96ff939c93fb
+  state: published
+  classification: scope
+  direction: scope_widened
+  one_line: '"Unless you opt-in to allow" became "unless you allow". Same default.'
+  note: ''
+  decided_by: human
+  reviewed_at: '2026-09-28T18:37:26Z'
+- doc: Cursor/Terms of Service.md
+  date: '2025-06-14'
+  kind: change
+  clause: a1c2d5c4e1e0
+  state: published
+  classification: position
+  direction: no_longer_trains
+  one_line: 'Cursor replaced its Privacy Mode clause with: Anysphere will not train,
+    or let any third party train, AI models on your content unless you explicitly
+    agree.'
+  note: ''
+  decided_by: human
+  reviewed_at: '2026-09-28T18:42:44Z'
 - doc: DeepSeek/Privacy Policy.md
   date: '2025-02-23'
   kind: change
@@ -208,6 +301,17 @@ events:
     sources” “to train our models,” while still training on interactions/usage.
   decided_by: panel
   reviewed_at: '2026-09-25T14:16:21Z'
+- doc: DeepSeek/Privacy Policy.md
+  date: '2025-04-28'
+  kind: change
+  clause: 82ac38dbe3a1
+  state: rejected
+  classification: wording
+  direction: wording_only
+  one_line: '"Information" became "Personal Data".'
+  note: ''
+  decided_by: human
+  reviewed_at: '2026-09-28T18:39:21Z'
 - doc: DeepSeek/Privacy Policy.md
   date: '2025-12-23'
   kind: change
@@ -254,6 +358,30 @@ events:
     Inputs/Outputs “Unless you opt out,” replacing “if you allow in your settings.”
   decided_by: panel
   reviewed_at: '2026-09-25T14:11:47Z'
+- doc: Grok/Commercial Terms.md
+  date: '2026-05-18'
+  kind: change
+  clause: db3e9ca7f413
+  state: published
+  classification: position
+  direction: scope_widened
+  one_line: xAI's enterprise terms dropped automatic 30-day deletion of User Content
+    and claimed ownership of de-identified data for any lawful purpose.
+  note: The promise not to train on User Content survives
+  decided_by: human
+  reviewed_at: '2026-09-28T18:44:23Z'
+- doc: Grok/Privacy Policy.md
+  date: '2025-08-01'
+  kind: change
+  clause: e992fb26251a
+  state: published
+  classification: position
+  direction: scope_widened
+  one_line: xAI dropped "we train our models only with the Usage Data you voluntarily
+    choose to provide" and now says you can object in settings.
+  note: Capture gap from 2024-01-10 to 2025-08-01.
+  decided_by: human
+  reviewed_at: '2026-09-28T18:42:59Z'
 - doc: Grok/Privacy Policy.md
   date: '2026-05-18'
   kind: change
@@ -279,6 +407,21 @@ events:
   decided_by: panel
   reviewed_at: '2026-09-25T14:12:11Z'
 - doc: Jasper/Terms of Service.md
+  date: '2024-02-08'
+  kind: change
+  clause: 39d1630f4846
+  state: published
+  classification: position
+  direction: scope_widened
+  one_line: Jasper's training licence stopped requiring customer data to be aggregated
+    and de-identified, and became perpetual and irrevocable.
+  note: 'Same day as an OTA extraction upgrade, but the text genuinely differs: the
+    old "(ii) train ... provided ... aggregated and de-identified" licence is replaced
+    by a perpetual licence covering "modifying, improving, and enhancing artificial
+    intelligence models". Check Jasper''s archived terms before publishing.'
+  decided_by: human
+  reviewed_at: '2026-09-28T18:30:35Z'
+- doc: Jasper/Terms of Service.md
   date: '2025-09-11'
   kind: change
   clause: 92b577d8ef7a
@@ -290,6 +433,18 @@ events:
     to object.”
   decided_by: panel
   reviewed_at: '2026-09-25T14:17:56Z'
+- doc: Microsoft Copilot/Privacy Policy.md
+  date: '2025-02-05'
+  kind: change
+  clause: 4632bedbd492
+  state: published
+  classification: disclosure
+  direction: now_trains
+  one_line: Training sentence first captured on an OTA extraction upgrade.
+  note: Appeared on OTA's "technical or declaration upgrade" commit. Cannot tell whether
+    Microsoft added it or OTA began capturing more of the page. Not a dated change.
+  decided_by: human
+  reviewed_at: '2026-09-28T18:35:57Z'
 - doc: Microsoft Copilot/Privacy Policy.md
   date: '2025-07-15'
   kind: change
@@ -383,3 +538,4 @@ tiers:
   name: Paid (Pro, Teams)
   confirmed_by: panel
   confirmed_at: '2026-09-25T14:19:01Z'
+
