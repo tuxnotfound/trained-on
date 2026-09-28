@@ -1,6 +1,5 @@
 <% page_title "Log in" %>
 <h1>Review admin</h1>
-<p class="lede">Log in with the username and password from <code>TRAINED_ON_ADMIN_USER</code> and <code>TRAINED_ON_ADMIN_PASSWORD</code>. Locally they are in <code>.env</code>.</p>
 <%= form_with url: admin_login_path, class: "review", data: { turbo: false } do %>
   <%= hidden_field_tag :return_to, params[:return_to] %>
   <div>
