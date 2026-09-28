@@ -107,40 +107,66 @@ found, and that every registry quote is verbatim.
 
 ## Deploy (not done yet)
 
-Kamal to the shared portfolio box: one Hetzner Cloud server in the EU that every project shares
-behind Kamal 2's proxy, decided 2026-09-28. The build plan's own CX22 for this project is
-withdrawn. The box exists since 2026-09-28: a CX33 (4 vCPU, 8 GB, x86) in Nuremberg, so
-`builder.arch` stays amd64. Its IP and SSH key are in the control tower's `HOSTING.md`; the
-deploy key here is the tuxnotfound key, which must be in root's `authorized_keys` on the box.
-Never rescale one of the older servers instead; they keep pre-June-2026 prices.
-The full decision, and who else lands on the box, is in the control tower under
-`projects/trained-on/STATUS.md`, section "Hosting", and in its `HOSTING.md`. SQLite, the corpus
-clone and local backup copies live on the `trained_on_storage` volume. Solid Queue runs inside
-Puma. A nightly job copies the database, gzips it and ships it to Cloudflare R2, which is a
-launch precondition on a shared box.
+Kamal to `tux-box`, the one Hetzner Cloud server every project shares behind Kamal 2's proxy
+(decided 2026-09-28; the build plan's own CX22 is withdrawn). CX33, 4 vCPU, 8 GB, x86, Nuremberg,
+IP `2.28.203.124`, Ubuntu 26.04.1, keys-only SSH, Hetzner firewall allowing 22, 80 and 443.
+`builder.arch` stays amd64. The full decision and who else lands on the box are in the control
+tower: `HOSTING.md` at its root and `projects/trained-on/STATUS.md`, section "Hosting". Never
+rescale one of the older servers instead; they keep pre-June-2026 prices.
 
-Secrets come from the shell or, failing that, from `.env` (see `.kamal/secrets` and
-`bin/secret`). With the three API keys and the admin password already in `.env`, the deploy
-needs two more things: the server's IP and a GitHub token with `write:packages` for ghcr.io.
+SQLite, the corpus clone and local backup copies live on the `trained_on_storage` volume. Solid
+Queue runs inside Puma. A nightly job copies the database, gzips it and ships it to Cloudflare
+R2, a launch precondition on a shared box.
 
-```
-echo 'KAMAL_REGISTRY_PASSWORD=ghp_...' >> .env
-echo 'R2_ACCESS_KEY_ID=...' >> .env; echo 'R2_SECRET_ACCESS_KEY=...' >> .env
-export TRAINED_ON_SERVER_IP=... R2_ENDPOINT=https://<account>.r2.cloudflarestorage.com R2_BUCKET=...
-export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...  # optional: email digest
-bin/kamal setup       # installs Docker on the server, builds and pushes the image, boots the app
-bin/kamal bootstrap   # clone the corpus, seed, rebuild history, replay review decisions
-bin/kamal backup      # first backup to R2, to prove the route before launch
-```
+### Runbook, in this order
 
-To restore: download the newest `trained-on/production-*.sqlite3.gz` from the bucket, gunzip
-it, stop the app, put it at `storage/production.sqlite3` on the volume, start the app.
+1. **On this Mac:** Docker Desktop running (`docker info` answers), and the deploy key in the
+   agent (`ssh-add -l` lists `tuxnotfound@cioga.eu`; if not, `ssh-add --apple-load-keychain`).
+   The key has a passphrase; Kamal takes it from the agent and never prompts.
+2. **Secrets.** `.kamal/secrets` reads each name from the shell or, failing that, from the
+   gitignored `.env` (see `bin/secret`). `.env` already has the three AI keys and the admin
+   user and password. Add the rest:
+   ```
+   echo "RAILS_MASTER_KEY=$(cat config/master.key)" >> .env
+   echo 'KAMAL_REGISTRY_PASSWORD=ghp_...' >> .env   # classic GitHub token, scope write:packages only
+   echo 'R2_ACCESS_KEY_ID=...' >> .env; echo 'R2_SECRET_ACCESS_KEY=...' >> .env
+   ```
+   The R2 pair comes from Cloudflare: R2, create bucket `trained-on-backups`, then Manage R2 API
+   Tokens, Create, permission Object Read and Write, restricted to that bucket only.
+3. **Shell for this session:**
+   ```
+   export TRAINED_ON_SERVER_IP=2.28.203.124
+   export R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com R2_BUCKET=trained-on-backups
+   export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...   # optional: email digest
+   ```
+4. **DNS before the first boot**, because kamal-proxy asks Let's Encrypt for the certificate on
+   the first request and the challenge must reach the box. In Cloudflare: Add a site,
+   `trainedon.me`, free plan; A record `@` to `2.28.203.124` with the proxy **off** (grey
+   cloud), plus `www` the same way; then at GoDaddy replace the nameservers with the two
+   Cloudflare gives. Wait until `dig +short trainedon.me` prints `2.28.203.124`.
+5. **Deploy:**
+   ```
+   bin/kamal setup       # installs Docker on the box, boots kamal-proxy, builds and pushes the image, boots the app
+   bin/kamal bootstrap   # clone the corpus, seed, rebuild history, replay review decisions
+   bin/kamal backup      # first backup to R2, to prove the route before launch
+   bin/kamal app logs    # should show Puma serving and the backup upload
+   ```
+   `curl -sI https://trainedon.me/up` must return 200 with a Let's Encrypt certificate.
+   If `setup` fails installing Docker on 26.04, Rebuild the server with Ubuntu 24.04 from the
+   Hetzner console (same IP, disk wiped), add the tuxnotfound public key to root again, and rerun.
+6. **Then Cloudflare's proxy on:** first fix the trusted-proxies item in the control tower's
+   BUGS.md for this project (behind the proxy Rails sees Cloudflare's address as every client,
+   which breaks the admin rate limit), deploy that, and only then switch both records to
+   proxied (orange cloud) and set SSL/TLS to Full (strict). Flexible would loop against
+   `force_ssl`.
+7. **Log it** in the control tower: `projects/trained-on/CHANGELOG.md` and the `tux-box` row and
+   Domains table in `HOSTING.md`.
+
+To restore a backup: download the newest `trained-on/production-*.sqlite3.gz` from the bucket,
+gunzip it, stop the app, put it at `storage/production.sqlite3` on the volume, start the app.
 
 The image is `ghcr.io/tuxnotfound/trained-on`, the host `trainedon.me`, and the server is
-reached with `~/.ssh/id_ed25519_tuxnotfound`, all set in `config/deploy.yml`.
-
-Put Cloudflare in front for the launch spike: nameservers at Cloudflare, record proxied, SSL
-mode Full (strict) so the box keeps its own Let's Encrypt certificate.
+reached as root with `~/.ssh/id_ed25519_tuxnotfound`, all set in `config/deploy.yml`.
 
 ## Layout
 
