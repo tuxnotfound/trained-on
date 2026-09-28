@@ -33,6 +33,8 @@ env:
     - ANTHROPIC_API_KEY
     - OPENAI_API_KEY
     - GEMINI_API_KEY
+    - R2_ACCESS_KEY_ID
+    - R2_SECRET_ACCESS_KEY
   clear:
     # Run Solid Queue (and so the nightly refresh) inside Puma: one process, one box.
     SOLID_QUEUE_IN_PUMA: true
@@ -45,6 +47,9 @@ env:
     TRAINED_ON_ANTHROPIC_MODEL: "<%= ENV.fetch("TRAINED_ON_ANTHROPIC_MODEL", "") %>"
     TRAINED_ON_OPENAI_MODEL: "<%= ENV.fetch("TRAINED_ON_OPENAI_MODEL", "gpt-5.5") %>"
     TRAINED_ON_GEMINI_MODEL: "<%= ENV.fetch("TRAINED_ON_GEMINI_MODEL", "gemini-3.1-pro-preview") %>"
+    # Nightly SQLite backup to Cloudflare R2, same names as the other apps on the box.
+    R2_ENDPOINT: "<%= ENV.fetch("R2_ENDPOINT", "") %>"
+    R2_BUCKET: "<%= ENV.fetch("R2_BUCKET", "") %>"
 
 # The server is created with this Mac's tuxnotfound key.
 ssh:

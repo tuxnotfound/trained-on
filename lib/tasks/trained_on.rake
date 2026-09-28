@@ -69,19 +69,10 @@ namespace :trained_on do
 end
 
 namespace :trained_on do
-  desc "Write a consistent copy of the primary SQLite database to storage/backups (upload it off-box from there)"
+  desc "Copy the SQLite database, gzip it, and ship it to R2 (local only when R2_* is unset)"
   task backup: :environment do
-    source = ActiveRecord::Base.connection.raw_connection
-    dir = Rails.root.join("storage/backups")
-    FileUtils.mkdir_p(dir)
-    path = dir.join("#{Rails.env}-#{Time.current.strftime('%Y%m%d-%H%M')}.sqlite3")
-    destination = SQLite3::Database.new(path.to_s)
-    backup = SQLite3::Backup.new(destination, "main", source, "main")
-    backup.step(-1)
-    backup.finish
-    destination.close
-    Dir.glob(dir.join("#{Rails.env}-*.sqlite3")).sort[0...-14].each { |old| File.delete(old) } # keep two weeks
-    puts path
+    result = TrainedOn::Backup.new.run!
+    puts result.key ? "uploaded #{result.key}" : "R2 not configured; local copy only: #{result.path}"
   end
 end
 

@@ -113,8 +113,10 @@ withdrawn. The box does not exist yet: order a CX33 (4 vCPU, 8 GB) in Falkenstei
 Helsinki, or a CAX21 (Arm) if CX is out of stock, and for Arm set `builder.arch: arm64` in
 `config/deploy.yml`. Never rescale an existing server for this; they keep pre-June-2026 prices.
 The full decision, and who else lands on the box, is in the control tower under
-`projects/trained-on/STATUS.md`, section "Hosting", and in its `HOSTING.md`. SQLite, backups and
-the corpus clone live on the `trained_on_storage` volume. Solid Queue runs inside Puma.
+`projects/trained-on/STATUS.md`, section "Hosting", and in its `HOSTING.md`. SQLite, the corpus
+clone and local backup copies live on the `trained_on_storage` volume. Solid Queue runs inside
+Puma. A nightly job copies the database, gzips it and ships it to Cloudflare R2, which is a
+launch precondition on a shared box.
 
 Secrets come from the shell or, failing that, from `.env` (see `.kamal/secrets` and
 `bin/secret`). With the three API keys and the admin password already in `.env`, the deploy
@@ -122,18 +124,22 @@ needs two more things: the server's IP and a GitHub token with `write:packages` 
 
 ```
 echo 'KAMAL_REGISTRY_PASSWORD=ghp_...' >> .env
-export TRAINED_ON_SERVER_IP=...
+echo 'R2_ACCESS_KEY_ID=...' >> .env; echo 'R2_SECRET_ACCESS_KEY=...' >> .env
+export TRAINED_ON_SERVER_IP=... R2_ENDPOINT=https://<account>.r2.cloudflarestorage.com R2_BUCKET=...
 export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...  # optional: email digest
 bin/kamal setup       # installs Docker on the server, builds and pushes the image, boots the app
 bin/kamal bootstrap   # clone the corpus, seed, rebuild history, replay review decisions
+bin/kamal backup      # first backup to R2, to prove the route before launch
 ```
+
+To restore: download the newest `trained-on/production-*.sqlite3.gz` from the bucket, gunzip
+it, stop the app, put it at `storage/production.sqlite3` on the volume, start the app.
 
 The image is `ghcr.io/tuxnotfound/trained-on`, the host `trainedon.me`, and the server is
 reached with `~/.ssh/id_ed25519_tuxnotfound`, all set in `config/deploy.yml`.
 
 Put Cloudflare in front for the launch spike: nameservers at Cloudflare, record proxied, SSL
-mode Full (strict). `bin/kamal backup` writes a SQLite copy to
-`storage/backups`. Shipping it off the box, to R2 for example, is not wired up yet.
+mode Full (strict) so the box keeps its own Let's Encrypt certificate.
 
 ## Layout
 
