@@ -69,5 +69,9 @@ aliases:
   refresh: app exec "bin/rails runner NightlyRefreshJob.perform_now"
   backup: app exec "bin/rails trained_on:backup"
 
+# Built on the box itself, natively: Kamal's local amd64 builder runs under
+# QEMU on Apple Silicon and its compiles die at random (bootsnap's extconf
+# took a trap signal on the first deploy).
 builder:
   arch: amd64
+  remote: ssh://root@<%= ENV.fetch("TRAINED_ON_SERVER_IP", "192.0.2.1") %>
