@@ -8,7 +8,7 @@
 #   TRAINED_ON_ADMIN_PASSWORD  the review admin password (required)
 # Everything else has a default: host trainedon.me, image ghcr.io/tuxnotfound/trained-on.
 service: trained-on
-image: <%= ENV.fetch("TRAINED_ON_REGISTRY", "ghcr.io/tuxnotfound/trained-on") %>
+image: <%= ENV.fetch("TRAINED_ON_IMAGE", "tuxnotfound/trained-on") %>
 
 servers:
   web:
