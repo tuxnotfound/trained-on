@@ -19,9 +19,12 @@ module TrainedOn
 
     attr_reader :document, :created_events
 
-    def initialize(document, corpus: Corpus.versions_repo)
+    # declarations: a clone of OTA's declarations repo, to catch changes of
+    # capture rules. Without one, only OTA's upgrade commits are checked.
+    def initialize(document, corpus: Corpus.versions_repo, declarations: nil)
       @document = document
       @corpus = corpus
+      @declarations = declarations
       @created_events = []
     end
 
@@ -30,6 +33,7 @@ module TrainedOn
       return self if phrases.empty?
 
       @versions = @corpus.versions(document.ota_path)
+      @declaration_changes = @declarations&.present? ? @declarations.declaration_changes(document.ota_path.split("/").first) : []
       runs = collapse(@versions, Locator.new(phrases))
       return self if runs.empty?
 
@@ -106,11 +110,15 @@ module TrainedOn
       occurred_on = run.first.committed_at.to_date
       attrs = {
         kind:, from_version: from, to_version: to, occurred_on:,
-        suspected_extraction: ExtractionCheck.suspected?(@versions, run.first),
+        suspected_extraction: ExtractionCheck.suspected?(@versions, run.first, @declaration_changes),
         reverses_event: (kind == "change" && from ? reversed_change(from, to) : nil)
       }
       key = [ occurred_on, to.sha256, kind ]
-      event = document.clause_events.create!(attrs.merge(carried.fetch(key, {})))
+      review = carried.fetch(key, {})
+      # The panel never decides a flagged event. A panel decision made before
+      # the flag existed is dropped, and the event waits for a person.
+      review = {} if attrs[:suspected_extraction] && review["decided_by"] == "panel"
+      event = document.clause_events.create!(attrs.merge(review))
       @created_events << event unless carried.key?(key)
     end
 

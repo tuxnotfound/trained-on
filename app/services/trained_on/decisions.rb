@@ -53,6 +53,8 @@ module TrainedOn
         event = document&.clause_events&.includes(:to_version)&.find_by(occurred_on: row.fetch("date"), kind: row.fetch("kind"))
         next missing << "#{row['doc']} #{row['date']}" unless event
         next stale << "#{row['doc']} #{row['date']}" unless event.to_version.sha256.start_with?(row.fetch("clause"))
+        # Same rule as the rebuild: a flagged event is a person's to decide.
+        next stale << "#{row['doc']} #{row['date']} (capture change, needs a person)" if event.suspected_extraction && row["decided_by"] == "panel"
         event.update!(row.slice("state", "classification", "direction", "one_line", "note", "decided_by").merge("reviewed_at" => Time.iso8601(row.fetch("reviewed_at"))))
         applied += 1
       end

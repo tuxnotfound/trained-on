@@ -5,11 +5,14 @@ class NightlyRefreshJobTest < ActiveJob::TestCase
 
   setup do
     @original_factory = NightlyRefreshJob.corpus_factory
+    @original_declarations = NightlyRefreshJob.declarations_factory
+    NightlyRefreshJob.declarations_factory = -> { nil }
     ENV["TRAINED_ON_REVIEWER"] = "reviewer@example.com"
   end
 
   teardown do
     NightlyRefreshJob.corpus_factory = @original_factory
+    NightlyRefreshJob.declarations_factory = @original_declarations
     ENV.delete("TRAINED_ON_REVIEWER")
   end
 

@@ -6,13 +6,16 @@ class NightlyRefreshJob < ApplicationJob
 
   # Swappable in tests; in production the corpus is cloned on first run.
   class_attribute :corpus_factory, default: -> { TrainedOn::Corpus.versions_repo.tap(&:ensure_clone!) }
+  class_attribute :declarations_factory, default: -> { TrainedOn::Corpus.declarations_repo.tap(&:ensure_clone!) }
 
   def perform
     corpus = corpus_factory.call
     corpus.pull!
+    declarations = declarations_factory.call
+    declarations&.fetch!
 
     new_events = Document.includes(:vendor).flat_map do |document|
-      TrainedOn::Backfill.new(document, corpus:).call.created_events
+      TrainedOn::Backfill.new(document, corpus:, declarations:).call.created_events
     end
     Tier.refresh_verification!
 

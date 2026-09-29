@@ -69,6 +69,43 @@ class TrainedOn::BackfillTest < ActiveSupport::TestCase
     assert document.clause_events.first.suspected_extraction
   end
 
+  # A stand-in for OTA's declarations repo: when the capture rules changed.
+  FakeDeclarations = Struct.new(:times) do
+    def present? = true
+    def declaration_changes(_service) = times
+  end
+
+  def backfill_with_rules(document, versions, times)
+    TrainedOn::Backfill.new(document, corpus: FakeCorpus.new(PATH => versions), declarations: FakeDeclarations.new(times)).call
+  end
+
+  test "flags events recorded just after OTA changed the document's capture rules" do
+    document = build_document(anchors: [ "train our models on your content" ])
+    versions = [ [ "2025-01-01", OLD ], [ "2025-02-01", NEW ] ]
+    backfill_with_rules(document, versions, [ Time.utc(2025, 1, 31, 15) ])
+    assert document.clause_events.first.suspected_extraction
+
+    backfill_with_rules(document, versions, [ Time.utc(2025, 1, 20), Time.utc(2025, 2, 2) ])
+    assert_not document.clause_events.first.suspected_extraction, "a rule change days before, or after, is not the cause"
+  end
+
+  test "a panel decision does not survive a new capture flag, a person's does" do
+    document = build_document(anchors: [ "train our models on your content" ])
+    versions = [ [ "2025-01-01", OLD ], [ "2025-02-01", NEW ] ]
+    rule_change = [ Time.utc(2025, 2, 1, 9) ]
+    backfill(document, versions)
+    document.clause_events.first.update!(state: "published", classification: "position", one_line: "Acme now trains.", decided_by: "panel", reviewed_at: Time.current)
+
+    backfill_with_rules(document, versions, rule_change)
+    event = document.clause_events.first
+    assert_equal "pending", event.state
+    assert_nil event.decided_by
+
+    event.update!(state: "rejected", classification: "churn", decided_by: "human", reviewed_at: Time.current)
+    backfill_with_rules(document, versions, rule_change)
+    assert_equal "rejected", document.clause_events.first.state
+  end
+
   test "a rebuild keeps human review decisions" do
     document = build_document(anchors: [ "train our models on your content" ])
     versions = [ [ "2025-01-01", OLD ], [ "2025-02-01", NEW ] ]

@@ -33,6 +33,17 @@ class TrainedOn::DecisionsTest < ActiveSupport::TestCase
     assert_equal Time.utc(2026, 9, 25, 11), @tier.confirmed_at
   end
 
+  test "a panel decision is not replayed onto an event flagged as a capture change" do
+    @event.update!(state: "published", decided_by: "panel", reviewed_at: Time.utc(2026, 9, 25, 10))
+    TrainedOn::Decisions.export!(@path)
+    reset_review_state
+    @event.update_columns(suspected_extraction: true)
+
+    result = TrainedOn::Decisions.apply!(@path)
+    assert_equal "pending", @event.reload.state
+    assert_equal 1, result.stale.size
+  end
+
   test "pending events are not exported" do
     data = TrainedOn::Decisions.export!(@path)
     assert_empty data["events"]

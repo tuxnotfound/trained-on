@@ -11,12 +11,22 @@ module TrainedOn
 
     class Error < StandardError; end
 
+    VERSIONS_REMOTE = "https://github.com/OpenTermsArchive/genai-contrib-versions.git"
+    DECLARATIONS_REMOTE = "https://github.com/OpenTermsArchive/genai-contrib-declarations.git"
+
     def self.versions_repo = new(ENV.fetch("TRAINED_ON_CORPUS", Rails.root.join("corpus/genai-contrib-versions").to_s))
+
+    # OTA's capture rules, cloned next to the versions.
+    def self.declarations_repo
+      dir = ENV.fetch("TRAINED_ON_DECLARATIONS") { File.join(File.dirname(versions_repo.dir), "genai-contrib-declarations") }
+      new(dir, remote: DECLARATIONS_REMOTE)
+    end
 
     attr_reader :dir
 
-    def initialize(dir)
+    def initialize(dir, remote: VERSIONS_REMOTE)
       @dir = dir
+      @remote = remote
     end
 
     def present? = File.directory?(File.join(dir, ".git"))
@@ -40,14 +50,24 @@ module TrainedOn
 
     def pull! = git("pull", "--ff-only", "--quiet")
 
-    REMOTE = "https://github.com/OpenTermsArchive/genai-contrib-versions.git"
+    # Declarations are only read from origin/main, so fetching is enough and a
+    # local clone may sit on any branch.
+    def fetch! = git("fetch", "--quiet", "origin", "main")
+
+    # When the rules for capturing a service changed on OTA's main branch: the
+    # declaration, its filters and its history file. First parent, so a merged
+    # pull request counts from the moment it was merged.
+    def declaration_changes(service)
+      paths = %w[json filters.js history.json].map { |ext| "declarations/#{service}.#{ext}" }
+      git("log", "--first-parent", "--format=%cI", "origin/main", "--", *paths).split.map { |t| Time.iso8601(t) }
+    end
 
     # A fresh server has no corpus yet. A blobless clone is a few megabytes;
     # file contents are fetched lazily the first time a version is shown.
     def ensure_clone!
       return self if present?
       FileUtils.mkdir_p(File.dirname(dir))
-      _, err, status = Open3.capture3("git", "clone", "--quiet", "--filter=blob:none", REMOTE, dir)
+      _, err, status = Open3.capture3("git", "clone", "--quiet", "--filter=blob:none", @remote, dir)
       raise Error, "clone failed: #{err}" unless status.success?
       self
     end

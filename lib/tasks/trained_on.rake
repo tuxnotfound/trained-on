@@ -2,9 +2,10 @@ namespace :trained_on do
   desc "Rebuild clause history for every tracked document (or DOC=\"ChatGPT/Privacy Policy.md\")"
   task backfill: :environment do
     TrainedOn::Corpus.versions_repo.ensure_clone!
+    declarations = TrainedOn::Corpus.declarations_repo.ensure_clone!
     scope = ENV["DOC"] ? Document.where(ota_path: ENV["DOC"]) : Document.all
     scope.includes(:vendor).find_each do |document|
-      run = TrainedOn::Backfill.new(document).call
+      run = TrainedOn::Backfill.new(document, declarations:).call
       versions = document.clause_versions.count
       puts format("%-45s %3d states %3d events (%d new)", document.ota_path, versions, document.clause_events.count, run.created_events.size)
     end
