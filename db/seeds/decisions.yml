@@ -270,13 +270,13 @@ events:
   date: '2025-04-19'
   kind: change
   clause: 96ff939c93fb
-  state: published
-  classification: scope
+  state: rejected
+  classification: wording
   direction: scope_widened
   one_line: '"Unless you opt-in to allow" became "unless you allow". Same default.'
   note: ''
   decided_by: human
-  reviewed_at: '2026-09-28T18:37:26Z'
+  reviewed_at: '2026-09-29T08:31:19Z'
 - doc: Cursor/Terms of Service.md
   date: '2025-06-14'
   kind: change
@@ -437,14 +437,14 @@ events:
   date: '2025-02-05'
   kind: change
   clause: 4632bedbd492
-  state: published
-  classification: disclosure
+  state: rejected
+  classification: churn
   direction: now_trains
   one_line: Training sentence first captured on an OTA extraction upgrade.
   note: Appeared on OTA's "technical or declaration upgrade" commit. Cannot tell whether
     Microsoft added it or OTA began capturing more of the page. Not a dated change.
   decided_by: human
-  reviewed_at: '2026-09-28T18:35:57Z'
+  reviewed_at: '2026-09-29T08:30:58Z'
 - doc: Microsoft Copilot/Privacy Policy.md
   date: '2025-07-15'
   kind: change
@@ -469,6 +469,19 @@ events:
     such training."
   decided_by: panel
   reviewed_at: '2026-09-25T14:11:07Z'
+- doc: Microsoft Copilot/Privacy Policy.md
+  date: '2025-12-06'
+  kind: anchor_lost
+  clause: e3b0c44298fc
+  state: rejected
+  classification: churn
+  direction: wording_only
+  one_line: OTA's capture of the Microsoft Privacy Statement broke.
+  note: Since OTA's 2025-12-06 extraction upgrade the capture is only the page header.
+    The registry quotes the last good capture (2025-12-09). Worth reporting upstream
+    to OTA.
+  decided_by: human
+  reviewed_at: '2026-09-28T18:50:24Z'
 tiers:
 - vendor: chatgpt
   name: Free, Plus and Pro
