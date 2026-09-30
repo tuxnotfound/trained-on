@@ -410,8 +410,8 @@ events:
   one_line: Grok (xAI) now says logged-in users “can select whether or not” User Content
     trains models; logged-out use “where permitted” grants “full rights” for training.
   note: 'OTA has no capture between 2023-11-20 and 2025-08-01 Re-decided by a person
-    2026-09-30: coincides with an OTA declaration change (new address); same document,
-    the change is real.'
+    2026-09-30: coincides with an OTA declaration change (renamed from xAI, new selector);
+    same document, the change is real.'
   decided_by: human
   reviewed_at: '2026-09-30T10:51:41Z'
 - doc: Jasper/Terms of Service.md
