@@ -1,4 +1,4 @@
-<% page_title @vendor.name %>
+<% page_title "Does #{@vendor.name} train on my prompts?" %>
 <% content_for :description, "Does #{@vendor.name} train on my prompts? What its terms say for each plan, in their words, and every dated change." %>
 <% content_for :head, auto_discovery_link_tag(:atom, vendor_feed_url(@vendor.slug), title: "Trained On: #{@vendor.name}") %>
 

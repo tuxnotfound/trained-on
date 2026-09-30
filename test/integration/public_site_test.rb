@@ -106,7 +106,7 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
   test "public pages are cacheable at the edge and set no cookie" do
     @event.publish!
     confirm_tier
-    [ root_path, changes_path, change_path(@event), vendor_path(@vendor), methodology_path, data_path,
+    [ root_path, changes_path, change_path(@event), vendor_path(@vendor), methodology_path, data_path, sitemap_path,
       changes_feed_path, vendor_feed_path(@vendor.slug), api_v1_vendors_path, api_v1_changes_path, registry_csv_path ].each do |path|
       get path
       assert_response :success, path
@@ -143,6 +143,39 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
   test "the footer has a way to reach me" do
     get root_path
     assert_select "footer a[href^='mailto:']", /Email me/
+  end
+
+  test "titles ask the question people search, and every page names its canonical address" do
+    @event.publish!
+    confirm_tier
+    get root_path
+    assert_select "title", "Is this AI training on my prompts? · Trained On"
+    get vendor_path(@vendor)
+    assert_select "title", "Does Acme train on my prompts? · Trained On"
+    get changes_path(type: "position")
+    assert_select "link[rel='canonical'][href=?]", "http://www.example.com/changes"
+  end
+
+  test "the sitemap lists public pages only" do
+    get sitemap_path
+    assert_response :success
+    assert_equal "application/xml", response.media_type
+    assert_match "<loc>http://www.example.com/methodology</loc>", response.body
+    assert_no_match change_path(@event), response.body
+    assert_no_match vendor_path(@vendor), response.body
+
+    @event.publish!
+    get sitemap_path
+    assert_match "<loc>http://www.example.com#{change_path(@event)}</loc>", response.body
+    assert_match "<loc>http://www.example.com#{vendor_path(@vendor)}</loc>", response.body
+  end
+
+  test "the data page describes the dataset for search engines" do
+    get data_path
+    data = JSON.parse(css_select("script[type='application/ld+json']").first.text)
+    assert_equal "Dataset", data["@type"]
+    assert_equal "https://opendatacommons.org/licenses/by/1-0/", data["license"]
+    assert_equal [ registry_csv_url, changes_csv_url, api_v1_vendors_url, api_v1_changes_url ], data["distribution"].pluck("contentUrl")
   end
 
   test "methodology and data pages render" do

@@ -82,4 +82,9 @@ module ApplicationHelper
   def page_title(*parts)
     content_for(:title, (parts.compact + [ "Trained On" ]).join(" · "))
   end
+
+  # Structured data for search engines, e.g. the Dataset on /data.
+  def json_ld(data)
+    tag.script(json_escape(data.to_json).html_safe, type: "application/ld+json")
+  end
 end

@@ -1,4 +1,24 @@
 <% page_title "Data" %>
+<% content_for :description, "The registry and the change record as files, for anyone who wants to cite, chart or build on them. CSV, JSON and Atom, under ODC-By 1.0." %>
+<% content_for :head, json_ld(
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  name: "Trained On: the registry and the change record",
+  description: "Is this AI training on my prompts? What each tool's own terms say, quoted and dated, and every time the answer changed.",
+  url: data_url,
+  license: "https://opendatacommons.org/licenses/by/1-0/",
+  isAccessibleForFree: true,
+  creator: { "@type": "Organization", name: "Trained On", url: root_url },
+  isBasedOn: "https://github.com/OpenTermsArchive/genai-contrib-versions",
+  keywords: [ "AI training", "terms of service", "privacy policy", "generative AI", "prompts" ],
+  dateModified: @last_capture&.to_date&.iso8601,
+  distribution: [
+    { "@type": "DataDownload", name: "registry.csv", encodingFormat: "text/csv", contentUrl: registry_csv_url },
+    { "@type": "DataDownload", name: "changes.csv", encodingFormat: "text/csv", contentUrl: changes_csv_url },
+    { "@type": "DataDownload", name: "vendors.json", encodingFormat: "application/json", contentUrl: api_v1_vendors_url },
+    { "@type": "DataDownload", name: "changes.json", encodingFormat: "application/json", contentUrl: api_v1_changes_url }
+  ]
+) %>
 <div class="prose">
 <h1>Data</h1>
 <p class="lede">The registry and the change record as files, for anyone who wants to cite, chart or build on them.</p>

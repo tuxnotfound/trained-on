@@ -9,6 +9,7 @@ Rails.application.routes.draw do
 
   get "methodology", to: "pages#methodology"
   get "data", to: "pages#data"
+  get "sitemap.xml", to: "sitemaps#show", as: :sitemap, defaults: { format: :xml }
 
   namespace :api do
     namespace :v1 do

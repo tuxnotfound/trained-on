@@ -6,6 +6,8 @@
     <title><%= title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="description" content="<%= description %>">
+    <%# Drops the query string, so filtered and cache-busted copies count as the page itself. %>
+    <link rel="canonical" href="<%= request.base_url + request.path %>">
     <%# The card shown where a link is pasted: X, Slack, LinkedIn, chat apps. %>
     <meta property="og:site_name" content="Trained On">
     <meta property="og:type" content="website">

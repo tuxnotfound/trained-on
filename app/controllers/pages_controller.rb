@@ -12,5 +12,7 @@ class PagesController < ApplicationController
     @rejected = ClauseEvent.where(state: "rejected").count
   end
 
-  def data; end
+  def data
+    @last_capture = ClauseVersion.maximum(:last_seen_at)
+  end
 end
