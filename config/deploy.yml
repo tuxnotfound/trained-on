@@ -37,21 +37,23 @@ env:
     - GEMINI_API_KEY
     - R2_ACCESS_KEY_ID
     - R2_SECRET_ACCESS_KEY
+    # Not secret, but read the same way (shell, else .env) so a deploy from a
+    # fresh shell cannot blank them. It did once: backups stayed on the box and
+    # the digest stopped.
+    - R2_ENDPOINT
+    - R2_BUCKET
+    - SMTP_ADDRESS
+    - SMTP_USERNAME
+    - TRAINED_ON_REVIEWER
+    - TRAINED_ON_MAIL_FROM
   clear:
     # Run Solid Queue (and so the nightly refresh) inside Puma: one process, one box.
     SOLID_QUEUE_IN_PUMA: true
     APP_HOST: "<%= ENV.fetch("TRAINED_ON_HOST", "trainedon.me") %>"
     TRAINED_ON_ADMIN_USER: "<%= ENV.fetch("TRAINED_ON_ADMIN_USER", "tux") %>"
-    TRAINED_ON_REVIEWER: "<%= ENV.fetch("TRAINED_ON_REVIEWER", "") %>"
-    TRAINED_ON_MAIL_FROM: "<%= ENV.fetch("TRAINED_ON_MAIL_FROM", "") %>"
-    SMTP_ADDRESS: "<%= ENV.fetch("SMTP_ADDRESS", "") %>"
-    SMTP_USERNAME: "<%= ENV.fetch("SMTP_USERNAME", "") %>"
     TRAINED_ON_ANTHROPIC_MODEL: "<%= ENV.fetch("TRAINED_ON_ANTHROPIC_MODEL", "") %>"
     TRAINED_ON_OPENAI_MODEL: "<%= ENV.fetch("TRAINED_ON_OPENAI_MODEL", "gpt-5.5") %>"
     TRAINED_ON_GEMINI_MODEL: "<%= ENV.fetch("TRAINED_ON_GEMINI_MODEL", "gemini-3.1-pro-preview") %>"
-    # Nightly SQLite backup to Cloudflare R2, same names as the other apps on the box.
-    R2_ENDPOINT: "<%= ENV.fetch("R2_ENDPOINT", "") %>"
-    R2_BUCKET: "<%= ENV.fetch("R2_BUCKET", "") %>"
 
 # The server is created with this Mac's tuxnotfound key.
 ssh:

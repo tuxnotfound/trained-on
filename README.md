@@ -130,15 +130,14 @@ R2, a launch precondition on a shared box.
    echo "RAILS_MASTER_KEY=$(cat config/master.key)" >> .env
    echo 'KAMAL_REGISTRY_PASSWORD=ghp_...' >> .env   # classic GitHub token, scope write:packages only
    echo 'R2_ACCESS_KEY_ID=...' >> .env; echo 'R2_SECRET_ACCESS_KEY=...' >> .env
+   echo 'R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com' >> .env; echo 'R2_BUCKET=trained-on-backups' >> .env
+   # optional, the email digest: TRAINED_ON_REVIEWER, TRAINED_ON_MAIL_FROM, SMTP_ADDRESS, SMTP_USERNAME, SMTP_PASSWORD
    ```
    The R2 pair comes from Cloudflare: R2, create bucket `trained-on-backups`, then Manage R2 API
-   Tokens, Create, permission Object Read and Write, restricted to that bucket only.
-3. **Shell for this session:**
-   ```
-   export TRAINED_ON_SERVER_IP=2.28.203.124
-   export R2_ENDPOINT=https://<account-id>.r2.cloudflarestorage.com R2_BUCKET=trained-on-backups
-   export TRAINED_ON_REVIEWER=... SMTP_ADDRESS=... SMTP_USERNAME=... SMTP_PASSWORD=...   # optional: email digest
-   ```
+   Tokens, Create, permission Object Read and Write, restricted to that bucket only. The R2 and
+   SMTP settings are read the same way as the secrets, so no deploy depends on what the shell
+   happens to have exported.
+3. **Shell for this session:** `export TRAINED_ON_SERVER_IP=2.28.203.124`
 4. **DNS before the first boot**, because kamal-proxy asks Let's Encrypt for the certificate on
    the first request and the challenge must reach the box. In Cloudflare: Add a site,
    `trainedon.me`, free plan; A record `@` to `2.28.203.124` with the proxy **off** (grey
