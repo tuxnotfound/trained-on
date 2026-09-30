@@ -65,15 +65,18 @@ events:
   date: '2025-07-31'
   kind: change
   clause: e9bb82cf3286
-  state: published
-  classification: disclosure
+  state: rejected
+  classification: churn
   direction: disclosure
   one_line: OpenAI still says it "may use your content to train our models" for consumer
     services like ChatGPT, Sora and Operator "unless you opt out," now with added
     detail on opt-out and Temporary Chat.
-  note: Best single quote of the consumer default. Names Sora and Operator
-  decided_by: panel
-  reviewed_at: '2026-09-25T14:05:09Z'
+  note: 'Best single quote of the consumer default. Names Sora and Operator Not a
+    change: that day OTA combined OpenAI''s ''How your data is used to improve model
+    performance'' page into the privacy policy (declarations #270); the added text
+    is that page.'
+  decided_by: human
+  reviewed_at: '2026-09-30T10:51:41Z'
 - doc: ChatGPT/Privacy Policy.md
   date: '2026-05-18'
   kind: change
@@ -123,14 +126,16 @@ events:
   date: '2025-09-01'
   kind: change
   clause: d9dae3227037
-  state: published
-  classification: disclosure
+  state: rejected
+  classification: churn
   direction: scope_widened
   one_line: Anthropic added that it may obtain personal data from “third party sources
     in order to train our models,” including feedback, flagged, or opted-in inputs
     and outputs.
-  decided_by: panel
-  reviewed_at: '2026-09-25T14:08:52Z'
+  note: 'Not a change: that day OTA combined Anthropic''s Non-User Privacy Policy
+    into the privacy policy (declarations #309); the added sentence is from that page.'
+  decided_by: human
+  reviewed_at: '2026-09-30T10:51:41Z'
 - doc: Claude.ai/Privacy Policy.md
   date: '2025-11-01'
   kind: change
@@ -377,11 +382,12 @@ events:
   state: published
   classification: position
   direction: scope_widened
-  one_line: xAI dropped "we train our models only with the Usage Data you voluntarily
-    choose to provide" and now says you can object in settings.
-  note: Capture gap from 2024-01-10 to 2025-08-01.
+  one_line: xAI dropped its limit on training "only with the Usage Data you voluntarily
+    choose to provide to us."
+  note: 'Capture gap from 2024-01-10 to 2025-08-01. Summary trimmed 2026-09-30: ''you
+    can object in settings'' is from the Europe addendum OTA combined in that day.'
   decided_by: human
-  reviewed_at: '2026-09-28T18:42:59Z'
+  reviewed_at: '2026-09-30T10:51:41Z'
 - doc: Grok/Privacy Policy.md
   date: '2026-05-18'
   kind: change
@@ -403,24 +409,29 @@ events:
   direction: no_longer_trains
   one_line: Grok (xAI) now says logged-in users “can select whether or not” User Content
     trains models; logged-out use “where permitted” grants “full rights” for training.
-  note: OTA has no capture between 2023-11-20 and 2025-08-01
-  decided_by: panel
-  reviewed_at: '2026-09-25T14:12:11Z'
+  note: 'OTA has no capture between 2023-11-20 and 2025-08-01 Re-decided by a person
+    2026-09-30: coincides with an OTA declaration change (new address); same document,
+    the change is real.'
+  decided_by: human
+  reviewed_at: '2026-09-30T10:51:41Z'
 - doc: Jasper/Terms of Service.md
   date: '2024-02-08'
   kind: change
   clause: 39d1630f4846
-  state: published
-  classification: position
+  state: rejected
+  classification: churn
   direction: scope_widened
   one_line: Jasper's training licence stopped requiring customer data to be aggregated
     and de-identified, and became perpetual and irrevocable.
   note: 'Same day as an OTA extraction upgrade, but the text genuinely differs: the
     old "(ii) train ... provided ... aggregated and de-identified" licence is replaced
     by a perpetual licence covering "modifying, improving, and enhancing artificial
-    intelligence models". Check Jasper''s archived terms before publishing.'
+    intelligence models". Check Jasper''s archived terms before publishing. Not a
+    change: that day OTA fixed a wrong URL (#eula to #terms, declarations ef0807c),
+    switching from Jasper''s End User License Agreement to its Terms of Service; the
+    raw snapshot of that day holds both wordings under the two contracts.'
   decided_by: human
-  reviewed_at: '2026-09-28T18:30:35Z'
+  reviewed_at: '2026-09-30T10:51:41Z'
 - doc: Jasper/Terms of Service.md
   date: '2025-09-11'
   kind: change
@@ -431,8 +442,10 @@ events:
   one_line: Jasper still may use Customer Property for “modifying, improving, and
     enhancing artificial intelligence models,” but EU/UK users “may have the right
     to object.”
-  decided_by: panel
-  reviewed_at: '2026-09-25T14:17:56Z'
+  note: 'Re-decided by a person 2026-09-30: coincides with an OTA declaration change
+    (new address); same document, the change is real.'
+  decided_by: human
+  reviewed_at: '2026-09-30T10:51:41Z'
 - doc: Microsoft Copilot/Privacy Policy.md
   date: '2025-02-05'
   kind: change
@@ -551,4 +564,3 @@ tiers:
   name: Paid (Pro, Teams)
   confirmed_by: panel
   confirmed_at: '2026-09-25T14:19:01Z'
-
