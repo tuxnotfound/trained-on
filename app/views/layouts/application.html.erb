@@ -1,9 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= content_for(:title) || "Trained On: is this AI training on my prompts?" %></title>
+    <% title = content_for(:title) || "Trained On: is this AI training on my prompts?" %>
+    <% description = content_for(:description) || "Is this AI training on my prompts? What each tool's own terms say, quoted and dated, and every time the answer changed." %>
+    <title><%= title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="<%= content_for(:description) || "Is this AI training on my prompts? What each tool's own terms say, quoted and dated, and every time the answer changed." %>">
+    <meta name="description" content="<%= description %>">
+    <%# The card shown where a link is pasted: X, Slack, LinkedIn, chat apps. %>
+    <meta property="og:site_name" content="Trained On">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= title %>">
+    <meta property="og:description" content="<%= description %>">
+    <meta property="og:url" content="<%= request.base_url + request.path %>">
+    <meta property="og:image" content="<%= request.base_url %>/og.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="color-scheme" content="light dark">
     <%# Only the preview bar has a form. Outside preview the token would write the session and set a cookie, which keeps the edge from caching the page. %>
     <%= csrf_meta_tags if preview? %>

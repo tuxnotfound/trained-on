@@ -51,6 +51,15 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_match "Three independent AI readers agreed: Claude (Anthropic), GPT (OpenAI), Gemini (Google)", response.body
   end
 
+  test "pages carry a link preview card" do
+    @event.publish!
+    get change_path(@event)
+    assert_select "meta[property='og:title'][content=?]", "2025-02-01: Acme Privacy Policy · Trained On"
+    assert_select "meta[property='og:description'][content=?]", "Acme started training on your data by default."
+    assert_select "meta[property='og:image'][content$='/og.png']"
+    assert_select "meta[name='twitter:card'][content='summary_large_image']"
+  end
+
   test "a panel decision replayed from the decisions file still names its readers" do
     @event.update!(state: "published", decided_by: "panel", reviewed_at: Time.current, panel: nil)
     get change_path(@event)
@@ -103,6 +112,7 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
       assert_response :success, path
       assert_match(/public/, response.headers["cache-control"], path)
       assert_match(/s-maxage=600/, response.headers["cache-control"], path)
+      assert_match(/stale-if-error=86400/, response.headers["cache-control"], path)
       assert_nil response.headers["set-cookie"], "#{path} set a cookie"
     end
   end

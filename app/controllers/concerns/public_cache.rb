@@ -19,6 +19,7 @@ module PublicCache
   def set_public_cache_control
     return unless request.get? && response.ok? && !preview? && flash.empty?
 
-    expires_in BROWSER_TTL, public: true, "s-maxage": EDGE_TTL.to_i, stale_while_revalidate: 1.hour.to_i
+    # If the box errors or is down, the edge keeps serving the last good copy for a day.
+    expires_in BROWSER_TTL, public: true, "s-maxage": EDGE_TTL.to_i, stale_while_revalidate: 1.hour.to_i, stale_if_error: 1.day.to_i
   end
 end
