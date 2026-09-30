@@ -53,7 +53,12 @@ class ClauseEvent < ApplicationRecord
   def decided_by_panel? = decided_by == "panel"
 
   # Reader providers that took part, for the public "decided by" line.
-  def panel_providers = Array(panel&.dig("readers")).map { |r| r["provider"] }.compact
+  # Decisions replayed from db/seeds/decisions.yml carry no readings. A panel
+  # decision always takes all three readers, so their names are known anyway.
+  def panel_providers
+    stored = Array(panel&.dig("readers")).map { |r| r["provider"] }.compact
+    stored.empty? && decided_by_panel? ? TrainedOn::Readers.all.map(&:provider) : stored
+  end
   def panel_reason = panel&.dig("reason")
   def panel_decision = panel&.dig("decision")
 

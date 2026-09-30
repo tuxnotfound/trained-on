@@ -50,9 +50,16 @@ module ApplicationHelper
   # Keeps preview on across links in development screenshots.
   def default_url_options = preview? && Rails.env.development? && params[:preview] ? { preview: "1" } : {}
 
+  # Clause text is OTA's markdown. Bold and italic markers and backslash
+  # escapes are noise to a reader; the stored text, and every hash, keeps them.
+  def plain_clause(text)
+    text.to_s.gsub("**", "").gsub(/\\([[:punct:]])/, '\1').gsub(/(?<![[:alnum:]])_([^_\n]+)_(?![[:alnum:]])/, '\1')
+  end
+
   def render_diff(diff)
     parts = diff.chunks.map do |chunk|
-      text = chunk.text.gsub("\n\n", "\n")
+      text = plain_clause(chunk.text.gsub("\n\n", "\n"))
+      next "" if chunk.action != "=" && text.strip.empty?
       case chunk.action
       when "=" then text
       when "-" then tag.del(text)
@@ -63,7 +70,7 @@ module ApplicationHelper
   end
 
   def clause_paragraphs(text)
-    safe_join(text.to_s.split("\n\n").map { |p| tag.p(p) })
+    safe_join(plain_clause(text).split("\n\n").map { |p| tag.p(p) })
   end
 
   def draft_marker(record)

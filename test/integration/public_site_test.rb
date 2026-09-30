@@ -51,6 +51,28 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_match "Three independent AI readers agreed: Claude (Anthropic), GPT (OpenAI), Gemini (Google)", response.body
   end
 
+  test "a panel decision replayed from the decisions file still names its readers" do
+    @event.update!(state: "published", decided_by: "panel", reviewed_at: Time.current, panel: nil)
+    get change_path(@event)
+    assert_match "Three independent AI readers agreed: Claude (Anthropic), GPT (OpenAI), Gemini (Google)", response.body
+  end
+
+  test "clause text shows without markdown markers, and terms take a plural verb" do
+    @event.from_version.update!(text: "(c) _Licenses to Jasper._ Customer grants a licence.\n\n11\\. Usage Data.** We will not train on your data.")
+    @event.to_version.update!(text: "Opt Out.** We may train on your data unless you opt out.")
+    @event.publish!
+    get change_path(@event)
+    assert_match "changed what its privacy policy says", response.body
+    assert_no_match "**", response.body
+    assert_match "(c) Licenses to Jasper. Customer grants", response.body
+    assert_match "11. Usage Data. We will not train", response.body
+    assert_match "Opt Out. We may train", response.body
+
+    @document.update!(name: "Terms of Service")
+    get change_path(@event)
+    assert_match "changed what its terms of service say<", response.body
+  end
+
   test "data files and feeds only carry reviewed material" do
     get api_v1_vendors_path
     assert_equal [], response.parsed_body["rows"]
