@@ -65,7 +65,7 @@
   document: Grok/Terms of Service.md
   answer: your_choice_default_unstated
   quote: When logged into our Service, you can select whether or not you want us to use your User Content to improve our products and services and train our models.
-  opt_out: A setting when logged in; the terms do not say which way it starts. Logged-out use grants xAI "full rights" to use your data for model training.
+  opt_out: A setting when logged in; the terms do not say which way it starts, but the apps ask you to choose at setup. Logged-out use grants xAI "full rights" to use your data for model training.
   position: 0
 - vendor: grok
   name: xAI API and enterprise
