@@ -75,7 +75,7 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    anthropic (1.73.0)
+    anthropic (1.74.0)
       base64 (~> 0.1)
       connection_pool (>= 2, < 4)
       standardwebhooks (~> 1.0)
@@ -372,7 +372,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
-  anthropic (~> 1.48)
+  anthropic (~> 1.74)
   aws-sdk-s3 (~> 1.0)
   bootsnap
   brakeman
@@ -409,7 +409,7 @@ CHECKSUMS
   activerecord (8.1.4) sha256=3b4957ea7f246c9231bd7faa909312eac03a9101aaf87977b6c52733ff00b04f
   activestorage (8.1.4) sha256=f4956f3ec9ee63e5e0b332b57c877cb627f82b56f4cc902279310d2aa285c7a8
   activesupport (8.1.4) sha256=891dd3fe43c4fc8391934b237b1189bb1f661c932a84a840043db9d46a4e80df
-  anthropic (1.73.0) sha256=1013f2a33943fb26c128e9f2f6a51cd8b9989a07b77fa83babf4c65f0e9f0417
+  anthropic (1.74.0) sha256=764d5daab0ef12a5bed885fa7940ecd9c52d4a276d19a22296e710672fb9d7f2
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   aws-eventstream (1.4.0) sha256=116bf85c436200d1060811e6f5d2d40c88f65448f2125bc77ffce5121e6e183b
   aws-partitions (1.1290.0) sha256=44613571eda66decddca594c10c9cee354ce819842b5724ca4fb5115e2f06811
