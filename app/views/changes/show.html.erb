@@ -4,7 +4,7 @@
 <article>
   <header class="event-head">
     <p><%= classification_badge(@event) %><%= draft_marker(@event) %></p>
-    <h1><%= @vendor.name %> changed what its <%= @event.document.name.downcase %> <%= @event.document.name.match?(/\bterms\b/i) ? "say" : "says" %></h1>
+    <h1><%= change_title(@event) %></h1>
     <p class="headline"><%= @event.one_line %></p>
   </header>
 
@@ -26,6 +26,7 @@
     <% end %>
     <dt>Decided by</dt>
     <dd><% if @event.decided_by_panel? %>Three independent AI readers agreed: <%= @event.panel_providers.join(", ") %>. <%= link_to "How that works", methodology_path(anchor: "review") %>.<% else %>A person, after reading both versions.<% end %></dd>
+    <dt>Cite</dt><dd><a href="#cite">Copy a citation</a></dd>
   </dl>
 
   <% if @event.suspected_extraction %>
@@ -52,6 +53,12 @@
       <div class="clause"><%= clause_paragraphs(@event.to_version.text) %></div>
     </section>
   </div>
+
+  <section id="cite">
+    <h2>Cite this change</h2>
+    <%= render "shared/citation", text: change_citation(@event) %>
+    <p class="small muted">This address is permanent. <%= link_to "Citing the whole record, and the data", press_path %>.</p>
+  </section>
 
   <% if @related.any? %>
     <h2>Other <%= @vendor.name %> changes</h2>

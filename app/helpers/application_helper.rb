@@ -79,6 +79,17 @@ module ApplicationHelper
     draft ? tag.span("draft", class: "draft-marker") : ""
   end
 
+  def change_title(event)
+    name = event.document.name
+    "#{event.vendor.name} changed what its #{name.downcase} #{name.match?(/\bterms\b/i) ? "say" : "says"}"
+  end
+
+  # One line to paste into an article or a paper. The address does not move:
+  # it is built from the date, the vendor and the document.
+  def change_citation(event)
+    %(Trained On, "#{change_title(event)}", first recorded #{l(event.occurred_on, format: :long)}, #{change_url(event)}. Derived from Open Terms Archive, ODC-By 1.0.)
+  end
+
   def page_title(*parts)
     content_for(:title, (parts.compact + [ "Trained On" ]).join(" · "))
   end

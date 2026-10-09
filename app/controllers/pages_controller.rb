@@ -15,4 +15,11 @@ class PagesController < ApplicationController
   def data
     @last_capture = ClauseVersion.maximum(:last_seen_at)
   end
+
+  def press
+    @walked = Document.sum(:versions_walked)
+    @published = ClauseEvent.published.count
+    @rows = Tier.verified.count
+    @positions = visible_events.where(classification: "position").includes(document: :vendor).order(occurred_on: :desc)
+  end
 end

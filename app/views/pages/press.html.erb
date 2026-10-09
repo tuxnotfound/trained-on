@@ -1,0 +1,46 @@
+<% page_title "Press and citations" %>
+<% content_for :description, "What Trained On is, how to cite it or a single change, the numbers, and how to reach me. Free to quote, free to reuse under ODC-By 1.0." %>
+<div class="prose">
+<h1>For press and research</h1>
+<p class="lede">Trained On is a public record of what AI companies' own terms say about training on your prompts, quoted and dated, and of every time those words changed.</p>
+<p>It reads <a href="https://opentermsarchive.org">Open Terms Archive</a>'s recorded history of each company's terms and privacy policy, keeps only the changes to the sentences about training, and shows each one old against new. It quotes; it does not judge any company, and it is not legal advice.</p>
+
+<h2>What this record does</h2>
+<ul>
+  <li><strong>The old words next to the new.</strong> Every change shows the clause before and after, with the removed and added words marked, and links the archive captures it comes from, so anyone can check it.</li>
+  <li><strong>Nothing is published on one reading.</strong> Three AI readers from three companies (Anthropic, OpenAI and Google) read each change on their own. It is published only when all three agree it is real, under the most cautious of their labels; anything else goes to a person. Every change page says which of the two decided it. <%= link_to "How it works", methodology_path(anchor: "review") %>.</li>
+  <li><strong>Free and open.</strong> No account and no paywall. The registry and every change download as CSV, JSON and Atom under ODC-By 1.0, and <a href="https://github.com/tuxnotfound/trained-on">the code that builds the site</a> is public.</li>
+  <li><strong>Built on Open Terms Archive.</strong> The document history is theirs, recorded by its contributors. This site separates the changes to the training clause from the noise around them.</li>
+</ul>
+
+<h2>The numbers</h2>
+<div class="stats">
+  <div class="stat"><b><%= number_with_delimiter(@walked) %></b><span>recorded versions of the tracked documents</span></div>
+  <div class="stat"><b><%= @published %></b><span>published changes to what they say about training</span></div>
+  <div class="stat"><b><%= @positions.size %></b><span>of them changes of position</span></div>
+  <div class="stat"><b><%= @rows %></b><span>tool plans in the registry</span></div>
+</div>
+<p class="small muted">These figures update with every nightly rebuild.</p>
+
+<h2>How to cite</h2>
+<p>In an article, one line is enough: Trained On (trainedon.me), a public record of what AI companies' terms say about training on your prompts, built on Open Terms Archive.</p>
+<p>The record as a whole:</p>
+<%= render "shared/citation", text: "Trained On, \"Is this AI training on my prompts?\", #{root_url}. Derived from Open Terms Archive, ODC-By 1.0." %>
+<p>The dataset:</p>
+<%= render "shared/citation", text: "Trained On, \"The registry and the change record\" (dataset), #{data_url}. Derived from Open Terms Archive, ODC-By 1.0." %>
+<p>A single change: every change page carries its own, under <em>Cite this change</em>. Its address is built from the date, the vendor and the document, and it is permanent.</p>
+
+<h2>Changes of position on record</h2>
+<% if @positions.any? %>
+  <ul class="changes"><%= render partial: "shared/change_item", collection: @positions, as: :event %></ul>
+<% else %>
+  <p class="muted">None published yet.</p>
+<% end %>
+<p class="small"><%= link_to "Every change, including scope changes and new disclosures", changes_path %>.</p>
+
+<h2>Follow it</h2>
+<p><%= link_to "Every future change, as a feed", changes_feed_path %>. Each vendor page has a feed of its own, and the <%= link_to "data page", data_path %> has the files.</p>
+
+<h2>Contact</h2>
+<p><a href="mailto:tuxnotfound@cioga.eu?subject=Trained%20On%20press">tuxnotfound@cioga.eu</a>. I answer press questions the same day.</p>
+</div>

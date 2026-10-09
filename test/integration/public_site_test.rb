@@ -106,7 +106,7 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
   test "public pages are cacheable at the edge and set no cookie" do
     @event.publish!
     confirm_tier
-    [ root_path, changes_path, change_path(@event), vendor_path(@vendor), methodology_path, data_path, sitemap_path,
+    [ root_path, changes_path, change_path(@event), vendor_path(@vendor), methodology_path, data_path, press_path, sitemap_path,
       changes_feed_path, vendor_feed_path(@vendor.slug), api_v1_vendors_path, api_v1_changes_path, registry_csv_path ].each do |path|
       get path
       assert_response :success, path
@@ -161,6 +161,7 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "application/xml", response.media_type
     assert_match "<loc>http://www.example.com/methodology</loc>", response.body
+    assert_match "<loc>http://www.example.com/press</loc>", response.body
     assert_no_match change_path(@event), response.body
     assert_no_match vendor_path(@vendor), response.body
 
@@ -176,6 +177,31 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_equal "Dataset", data["@type"]
     assert_equal "https://opendatacommons.org/licenses/by/1-0/", data["license"]
     assert_equal [ registry_csv_url, changes_csv_url, api_v1_vendors_url, api_v1_changes_url ], data["distribution"].pluck("contentUrl")
+  end
+
+  test "a change page carries a citation with its permanent address" do
+    @event.publish!
+    get change_path(@event)
+    assert_select "a[href='#cite']"
+    assert_select "#cite pre", text: %(Trained On, "Acme changed what its privacy policy says", first recorded 1 Feb 2025, ) +
+                                     %(http://www.example.com/changes/2025-02-01-acme-privacy-policy. Derived from Open Terms Archive, ODC-By 1.0.)
+    assert_select "#cite button[hidden]", "Copy"
+  end
+
+  test "the press page has the numbers, citations, the changes of position and a contact" do
+    get press_path
+    assert_response :success
+    assert_no_match "Acme started training", response.body
+
+    @event.publish!
+    confirm_tier
+    get press_path
+    assert_select ".stat b", text: "1", minimum: 2
+    assert_select ".citation pre", /http:\/\/www.example.com\/data/
+    assert_select ".changes a[href=?]", change_path(@event), text: "Acme started training on your data by default."
+    assert_select "main a[href^='mailto:']"
+    get root_path
+    assert_select "footer a[href=?]", press_path
   end
 
   test "methodology and data pages render" do
