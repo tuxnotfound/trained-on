@@ -1,0 +1,37 @@
+# Trained On
+
+> Is this AI training on my prompts? A public, dated record of what AI companies' own terms say about training on your prompts, quoted word for word, and of every time those words changed. Built on Open Terms Archive's recorded history of each document. Free to read and reuse under ODC-By 1.0.
+
+Each answer below is the vendor's own words, with the date Open Terms Archive first recorded them. Nothing is published on one reading: three AI readers from Anthropic, OpenAI and Google must agree, or a person decides. The site quotes; it does not judge any company, and it is not legal advice.
+
+## Which AI tools train on your prompts
+
+<% if @last_capture -%>
+Answers as of the latest capture processed, <%= @last_capture.to_date.iso8601 %>.
+
+<% end -%>
+<% @tiers.each do |tier| -%>
+- [<%= tier.vendor.name %>, <%= tier.name %>](<%= vendor_url(tier.vendor) %>): <%= tier.answer_text %><%= " #{tier.opt_out}" if tier.opt_out.present? %> In their words: "<%= plain_clause(tier.quote).squish %>"<%= llms_source(tier) %>
+<% end -%>
+
+A tool that is not listed is not tracked, which says nothing about whether it trains on your prompts. Google Gemini is not covered: its statement about training lives in the Gemini Apps privacy notice, which Open Terms Archive does not track.
+
+## Changes of position
+
+<% @positions.each do |event| -%>
+- [<%= event.occurred_on.iso8601 %>, <%= event.vendor.name %> <%= event.document.name.downcase %>](<%= change_url(event) %>): <%= event.one_line %>
+<% end -%>
+
+## Pages
+
+- [Registry](<%= root_url %>): every tool and plan, the answer, the quote and its date
+- [All changes](<%= changes_url %>): every published change, the old words against the new
+- [Methodology](<%= methodology_url %>): how the record is made and reviewed, and its known gaps
+- [Press and citations](<%= press_url %>): what the site is, how to cite it, the numbers
+
+## Data
+
+- [registry.csv](<%= registry_csv_url %>): one row per tool plan
+- [changes.csv](<%= changes_csv_url %>): every published change
+- [vendors.json](<%= api_v1_vendors_url %>) and [changes.json](<%= api_v1_changes_url %>): the same as JSON
+- [Atom feed](<%= changes_feed_url %>): every future change

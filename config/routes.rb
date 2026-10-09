@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   get "data", to: "pages#data"
   get "press", to: "pages#press"
   get "sitemap.xml", to: "sitemaps#show", as: :sitemap, defaults: { format: :xml }
+  get "llms.txt", to: "pages#llms", as: :llms, defaults: { format: :text }
 
   namespace :api do
     namespace :v1 do

@@ -106,7 +106,7 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
   test "public pages are cacheable at the edge and set no cookie" do
     @event.publish!
     confirm_tier
-    [ root_path, changes_path, change_path(@event), vendor_path(@vendor), methodology_path, data_path, press_path, sitemap_path,
+    [ root_path, changes_path, change_path(@event), vendor_path(@vendor), methodology_path, data_path, press_path, llms_path, sitemap_path,
       changes_feed_path, vendor_feed_path(@vendor.slug), api_v1_vendors_path, api_v1_changes_path, registry_csv_path ].each do |path|
       get path
       assert_response :success, path
@@ -202,6 +202,20 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_select "main a[href^='mailto:']"
     get root_path
     assert_select "footer a[href=?]", press_path
+  end
+
+  test "llms.txt carries the reviewed registry and the changes of position, unescaped" do
+    get llms_path
+    assert_response :success
+    assert_equal "text/plain", response.media_type
+    assert_no_match "We may train on your data", response.body
+
+    @event.publish!
+    confirm_tier
+    get llms_path
+    assert_match(/\A# Trained On\n/, response.body)
+    assert_match '- [Acme, Free](http://www.example.com/vendors/acme): Yes, by default. You can opt out. In their words: "We may train on your data unless you opt out." (Privacy Policy;', response.body
+    assert_match "- [2025-02-01, Acme privacy policy](http://www.example.com/changes/2025-02-01-acme-privacy-policy): Acme started training on your data by default.", response.body
   end
 
   test "methodology and data pages render" do
