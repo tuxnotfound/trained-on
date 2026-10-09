@@ -62,3 +62,8 @@ gem "diff-lcs", "~> 2.0"   # word-level diffs between clause versions
 gem "csv"                  # CSV export of the dataset (not a default gem since Ruby 3.4)
 gem "anthropic", "~> 1.48" # the Claude reader on the review panel
 gem "aws-sdk-s3", "~> 1.0", require: false # nightly SQLite backup to Cloudflare R2
+
+group :test do
+  # Gateways are tested against stubbed HTTP, never the real API (control-tower RAILS.md, rule 12).
+  gem "webmock"
+end

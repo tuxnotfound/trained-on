@@ -21,3 +21,7 @@ production:
     class: NightlyRefreshJob
     queue: default
     schedule: at 4am every day
+  announce_changes:
+    class: AnnounceChangesJob
+    queue: default
+    schedule: at 5am every day

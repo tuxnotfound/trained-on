@@ -38,5 +38,9 @@ module TrainedOn
 
     # Don't generate system test files.
     config.generators.system_tests = nil
+
+    # IndexNow's key is public by design: search engines fetch /<key>.txt and
+    # check it holds the key, which proves the pings come from this site.
+    config.x.indexnow_key = "1cc5abab1a4125d4c234e43aa95cd71c"
   end
 end
