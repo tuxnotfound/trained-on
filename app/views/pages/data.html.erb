@@ -6,6 +6,8 @@
   name: "Trained On: the registry and the change record",
   description: "Is this AI training on my prompts? What each tool's own terms say, quoted and dated, and every time the answer changed.",
   url: data_url,
+  identifier: "https://doi.org/10.5281/zenodo.23346775",
+  sameAs: "https://github.com/tuxnotfound/trained-on-dataset",
   license: "https://opendatacommons.org/licenses/by/1-0/",
   isAccessibleForFree: true,
   creator: { "@type": "Organization", name: "Trained On", url: root_url },
@@ -29,5 +31,6 @@
   <li><%= link_to "changes.atom", changes_feed_path %>: a feed of published changes. Each vendor page has its own feed too.</li>
 </ul>
 <p>Licence: <a href="https://opendatacommons.org/licenses/by/1-0/">ODC-By 1.0</a>. Attribute "Trained On, derived from Open Terms Archive contributors". Citation lines are on the <%= link_to "press page", press_path %>.</p>
+<p>Dated snapshots are archived on <a href="https://doi.org/10.5281/zenodo.23346775">Zenodo</a> (DOI 10.5281/zenodo.23346775, always the latest snapshot) from <a href="https://github.com/tuxnotfound/trained-on-dataset">a public repository</a>, for anyone who needs to cite the record as it stood on a date.</p>
 <p>Only published changes and verified rows appear in these files. Nothing is included before a person has reviewed it.</p>
 </div>
