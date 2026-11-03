@@ -60,6 +60,11 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_select "meta[name='twitter:card'][content='summary_large_image']"
   end
 
+  test "pages load Openstage's view counter" do
+    get root_path
+    assert_select "script[src='https://openstage.dev/v.js'][data-project='os_dwgnqfqhvcgy'][defer]"
+  end
+
   test "a panel decision replayed from the decisions file still names its readers" do
     @event.update!(state: "published", decided_by: "panel", reviewed_at: Time.current, panel: nil)
     get change_path(@event)

@@ -27,6 +27,10 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
+    <%# Openstage counts page views: no cookie, the IP hashed with a key that changes daily. Preview is me, so it stays out. %>
+    <% unless preview? %>
+      <script defer src="https://openstage.dev/v.js" data-project="os_dwgnqfqhvcgy"></script>
+    <% end %>
   </head>
   <body>
     <% if preview? %>

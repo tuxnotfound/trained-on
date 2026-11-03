@@ -83,6 +83,7 @@ class AdminTest < ActionDispatch::IntegrationTest
     get root_path
     assert_match "Acme trains.", response.body
     assert_match "draft", response.body
+    assert_select "script[src='https://openstage.dev/v.js']", count: 0
   end
 
   test "a person confirms or withdraws a registry row's answer" do
