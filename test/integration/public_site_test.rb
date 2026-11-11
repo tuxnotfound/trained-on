@@ -65,6 +65,11 @@ class PublicSiteTest < ActionDispatch::IntegrationTest
     assert_select "script[src='https://openstage.dev/v.js'][data-project='os_dwgnqfqhvcgy'][defer]"
   end
 
+  test "the footer links to the project's Openstage page, followable" do
+    get root_path
+    assert_select "footer a[href='https://openstage.dev/tuxnotfound/trained-on']:not([rel~='nofollow'])"
+  end
+
   test "a panel decision replayed from the decisions file still names its readers" do
     @event.update!(state: "published", decided_by: "panel", reviewed_at: Time.current, panel: nil)
     get change_path(@event)
